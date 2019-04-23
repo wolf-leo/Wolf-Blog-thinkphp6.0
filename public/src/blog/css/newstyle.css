@@ -1,0 +1,1305 @@
+body{
+    margin:0;
+    padding:0;
+    font-family: 'Vollkorn', serif;
+    background:url(/src/blog/image/banner.jpg) no-repeat 0 0;
+    background-size:100% 100%;
+}
+body a{
+    transition:0.5s all;
+    -webkit-transition:0.5s all;
+    -moz-transition:0.5s all;
+    -o-transition:0.5s all;
+    -ms-transition:0.5s all;
+}
+h1,h2,h3,h4,h5,h6{
+    margin:0;			   
+}	
+p{
+    margin:0;
+}
+ul{
+    margin:0;
+    padding:0;
+}
+/*--header--*/
+.label-1 {
+    background: #000;
+    width: 1140px;
+    height: 0;
+    display: block;
+}
+.label-3 {
+    border-top: 3px solid #000;
+    height: 6px;
+}
+.label-4 {
+    border-top: 1px solid #000;
+    height: 15px;
+}
+.label-5 {
+    border-top: 3px solid #000;
+    height: 6px;
+}
+.label-6 {
+    border-top: 1px solid #000;
+    height: 15px;
+}
+.label-7 {
+    border-top: 3px solid #000;
+    height: 6px;
+}
+.label-8 {
+    border-top: 1px solid #000;
+    height: 15px;
+}
+.top-menu {
+    margin: 9em 0 0 0;
+    border-top: 3px solid #000;
+    position: relative;
+    border-bottom: 3px solid#000;
+    height: 100px;
+}
+.logo {
+    position: relative;
+    bottom: 68px;
+    left: 41%;
+    width: 11%;
+}
+.nav {
+    list-style: none;
+    padding: 2em 0;
+    border-top: 1px solid#000;
+    margin: 3px 0;
+    border-bottom: 1px solid;
+}
+.copyrights{text-indent:-9999px;height:0;line-height:0;font-size:0;overflow:hidden;}
+ul.nav li:nth-child(2) {
+    margin-right: 25em;
+}
+ul.nav li {
+    display: inline-block;
+}
+.nav li a {
+    display: block;
+    padding: 0px;
+    color: #000;
+    font-size: 1.5em;
+    margin: 0 60px;
+    font-weight: 400;
+}
+li.logo {
+    background: none;
+    border: none;
+}
+li.logo a {
+    font-size: 5em;
+    color: #17AED2;
+}
+div#banner-top {
+    text-align: center;
+    padding-top: 6em;
+}
+div#banner-top h1 {
+    font-size: 5.6em;
+    color:#000;
+    font-family: 'Abril Fatface', cursive;
+}
+div#banner-top h1 span.left-icon {
+    background: url(/src/blog/image/left.png) no-repeat 0px 15px;
+    width: 204px;
+    height: 80px;
+    display: block;
+    float: left;
+}
+div#banner-top h1 span.right-icon {
+    background: url(/src/blog/image/right.png) no-repeat 0px 15px;
+    width: 204px;
+    height: 80px;
+    display: block;
+    float: right;
+}
+div#banner-top h2 {
+    font-size: 3.6em;
+    padding: .5em 0;
+    width: 77%;
+    margin: 0 auto;
+    color:#000;
+}
+div#banner-top h2 span.left-icon {
+    background: url(/src/blog/image/left.png) no-repeat 0px 10px;
+    width: 204px;
+    height: 50px;
+    display: block;
+    float: left;
+}
+div#banner-top h2 span.right-icon {
+    background: url(/src/blog/image/right.png) no-repeat 0px 10px;
+    width: 204px;
+    height: 50px;
+    display: block;
+    float: right;
+}
+.header-icons {
+    text-align: center;
+    margin: 2em 0;
+}
+.header-icons a span {
+    width: 62px;
+    height: 62px;
+    background: url('/src/blog/image/sc-icon.png') no-repeat 0px 0px;
+    display: inline-block;
+    margin: 0 5px;
+}
+.header-icons a span.fb {
+    background-position:0px 0px;
+}
+.header-icons a span.fb:hover {
+    background-position:0px -62px;
+}
+.header-icons a span.tw {
+    background-position: -62px 0px;
+}
+.header-icons a span.tw:hover {
+    background-position: -62px -62px;
+}
+.header-icons a span.pin{
+    background-position: -123px 0px;
+}
+.header-icons a span.pin:hover{
+    background-position: -123px -62px;
+}
+.header-icons a span.likdin{
+    background-position: -186px 0px;
+}
+.header-icons a span.likdin:hover{
+    background-position: -186px -62px;
+}
+.header-icons a span.dribble{
+    background-position: -248px 0px;
+}
+.header-icons a span.dribble:hover{
+    background-position: -248px -62px;
+}
+.header-icons a span.be{
+    background-position: -310px 0px;
+}
+.header-icons a span.be:hover{
+    background-position: -310px -62px;
+}
+/*--work--*/
+.work {
+    text-align: center;
+    margin: 10em 0 0;
+}
+.work p {
+    font-size: 1.4em;
+    margin-bottom: 4em;
+}
+.work h3 {
+    font-family: 'Abril Fatface', cursive;
+    font-size: 3.6em;
+    padding: .5em 0;
+    width: 51%;
+    margin: 3% auto 0;
+    color: #000;
+}
+.work h3 span.left-icon {
+    background: url(/src/blog/image/left.png) no-repeat 0px 10px;
+    width: 204px;
+    height: 50px;
+    display: block;
+    float: left;
+}
+.work h3 span.right-icon {
+    background: url(/src/blog/image/right.png) no-repeat 0px 10px;
+    width: 204px;
+    height: 50px;
+    display: block;
+    float: right;
+}
+/*--portfolio--*/
+/*-----------------------------------------------------------------------------------*/
+.b-link-stripe{
+    position:relative;
+    display:inline-block;
+    vertical-align:top;
+    font-weight: 300;
+    overflow:hidden;
+}
+.b-link-stripe .b-wrapper{
+    position:absolute;
+    width:100%;
+    height:100%;
+    top:0;
+    left:0;
+    text-align:center;
+    color:#ffffff;
+    overflow:hidden;
+}
+.b-link-stripe .b-line{
+    position:absolute;
+    top:0;
+    bottom:0;
+    width:20%;
+    background:rgba(15, 207, 140, 0.9);
+    transition:all 0.5s linear;
+    -moz-transition:all 0.5s linear;
+    -ms-transition:all 0.5s linear;
+    -o-transition:all 0.5s linear;
+    -webkit-transition:all 0.5s linear;
+    opacity:0;
+    visibility:hidden; /* lt-ie9 */
+}
+/*-----------------------------------------------------------------------------------*/
+/*	Animation effects
+/*-----------------------------------------------------------------------------------*/
+.b-animate-go{
+    text-decoration:none;
+}
+.b-animate {
+    transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    -ms-transition: all 0.5s;
+    -o-transition: all 0.5s;
+    -webkit-transition: all 0.5s;
+    visibility: hidden;
+    font-size: 15px;
+    font-weight: 400;
+    width: 40%;
+    line-height: 1.3em;
+    margin: 0 auto;
+    top: 35%;
+}
+.b-animate img{
+    margin-top:12%;
+    display: -webkit-inline-box;
+}
+/* lt-ie9 */
+.b-animate-go:hover .b-animate{
+    visibility:visible;
+}
+.b-from-left{
+    position:relative;
+    left:-100%;
+}
+.b-animate-go:hover .b-from-left{
+    left:0;
+}
+span.m_4{
+    font-size:14px;
+    font-weight:400;
+}
+p.m_5 {
+    margin: 2% auto 5%;
+    width: 70%;
+    color: #283A47;
+    font-size: 1.1em;
+    font-weight: 600;
+    line-height: 1.5em;
+    text-align: center;
+}
+.project-top h3 {
+    float: left;
+    color: #324B73;
+    font-weight: 900;
+    font-size: 2em;
+    margin-top: 2em;
+}
+/*--team--*/
+.span_1_of_4 {
+    width: 22.8%;
+}
+.col_1_of_4 {
+    display: block;
+    float: left;
+    margin: 1% 0 1% 2.6%;
+    background: #FFF;
+}
+.b-wrapper:hover {
+    background: rgba(49, 153, 255, 0.48);
+    transition: 0.5s all;
+    -webkit-transition: 0.5s all;
+    -o-transition: 0.5s all;
+    -moz-transition: 0.5s all;
+    -ms-transition: 0.5s all;
+}
+/* lt-ie9 */
+.b-link-stripe:hover .b-line{
+    visibility:visible;
+}
+.b-link-stripe .b-line1{
+    left:0;
+}
+.b-link-stripe .b-line2{
+    left:20%;
+    transition-delay:0.1s !important;
+    -moz-transition-delay:0.1s !important;
+    -ms-transition-delay:0.1s !important;
+    -o-transition-delay:0.1s !important;
+    -webkit-transition-delay:0.1s !important;
+}
+.b-link-stripe .b-line3{
+    left:40%;
+    transition-delay:0.2s !important;
+    -moz-transition-delay:0.2s !important;
+    -ms-transition-delay:0.2s !important;
+    -o-transition-delay:0.2s !important;
+    -webkit-transition-delay:0.2s !important;
+}
+.b-link-stripe .b-line4{
+    left:60%;
+    transition-delay:0.3s !important;
+    -moz-transition-delay:0.3s !important;
+    -ms-transition-delay:0.3s !important;
+    -o-transition-delay:0.3s !important;
+    -webkit-transition-delay:0.3s !important;
+}
+.b-link-stripe .b-line5{
+    left:80%;
+    transition-delay:0.4s !important;
+    -moz-transition-delay:0.4s !important;
+    -ms-transition-delay:0.4s !important;
+    -o-transition-delay:0.4s !important;
+    -webkit-transition-delay:0.4s !important;
+}
+.b-link-stripe:hover .b-line{
+    opacity:1;
+}
+#portfoliolist .portfolio {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    width: 24%;
+    display: none;
+    float: left;
+    overflow: hidden;
+    margin: 0 1% 1% 0;
+    background: none;
+}
+.portfolio.icon.mix_all {
+    padding: 0;
+}
+div#portfoliolist {
+    padding: 0.5% 0px;
+}
+.project h5 {
+    color: #334D72;
+    text-align: center;
+    font-size: 2.6em;
+    font-weight: 600;
+    padding: 1em 0 0em;
+}
+.portfolio-wrapper {
+    overflow:hidden;
+    position: relative !important;
+    cursor:pointer;
+}
+.portfolio img {
+    max-width:100%;
+    /*--position: relative;--*/
+    transition: all 300ms!important;
+    -webkit-transition: all 300ms!important;
+    -moz-transition: all 300ms!important;
+}
+.portfolio .label {
+    position: absolute;
+    width: 100%;
+    height:40px;
+    bottom:-40px;
+}
+.portfolio .label-bg {
+    background: #22B4B8;
+    width: 100%;
+    height:100%;
+    position: absolute;
+    top:0;
+    left:0;
+}
+.portfolio .label-text {
+    color:#fff;
+    position: relative;
+    z-index:500;
+    padding:5px 8px;
+}
+
+.portfolio .text-category {
+    display:block;
+    font-size:9px;
+    font-size: 12px;
+    text-transform:uppercase;
+}
+/* Self Clearing Goodness */
+.container:after { content: "\0020"; display: block; height: 0; clear: both; visibility: hidden; }
+.clearfix:before,
+.clearfix:after,
+.row:before,
+.row:after {
+    content: '\0020';
+    display: block;
+    overflow: hidden;
+    visibility: hidden;
+    width: 0;
+    height: 0;
+}
+.row:after,
+.clearfix:after {
+    clear: both;
+}
+.row,
+.clearfix {
+    zoom: 1;
+}
+
+.clear {
+    clear: both;
+    display: block;
+    overflow: hidden;
+    visibility: hidden;
+    width: 0;
+    height: 0;
+}
+.project {
+    margin-bottom: 8em;
+}
+/*--/portfolio--*/
+/*--/work--*/
+/*--about--*/
+.about {
+    text-align: center;
+    margin: 4em 0;
+}
+.about h3 {
+    font-family: 'Abril Fatface', cursive;
+    font-size: 3.6em;
+    padding: .5em 0;
+    width: 55%;
+    margin: 3% auto 0;
+    color: #000;
+}
+.about p {
+    font-size: 1.3em;
+}
+.about h3 span.left-icon {
+    background: url(/src/blog/image/left.png) no-repeat 0px 10px;
+    width: 204px;
+    height: 50px;
+    display: block;
+    float: left;
+}
+.about h3 span.right-icon {
+    background: url(/src/blog/image/right.png) no-repeat 0px 10px;
+    width: 204px;
+    height: 50px;
+    display: block;
+    float: right;
+}
+.about-right {
+    text-align: left;
+}
+.about-right p {
+    padding: 10px 0;
+    line-height: 1.8em;
+    font-size: 1.3em;
+}
+.about-info {
+    margin: 6em 0;
+}
+.about-icons {
+    margin: 2em 0 0 0;
+}
+.about-icons a span {
+    width: 62px;
+    height: 62px;
+    background: url('/src/blog/image/sc-icon.png') no-repeat 0px 0px;
+    display: inline-block;
+    margin: 0 5px 0 0;
+}
+.about-icons a span.fb {
+    background-position:0px 0px;
+}
+.about-icons a span.fb:hover {
+    background-position:0px -62px;
+}
+.about-icons a span.tw {
+    background-position: -62px 0px;
+}
+.about-icons a span.tw:hover {
+    background-position: -62px -62px;
+}
+.about-icons a span.pin{
+    background-position: -123px 0px;
+}
+.about-icons a span.pin:hover{
+    background-position: -123px -62px;
+}
+.about-icons a span.likdin{
+    background-position: -186px 0px;
+}
+.about-icons a span.likdin:hover{
+    background-position: -186px -62px;
+}
+.about-icons a span.dribble{
+    background-position: -248px 0px;
+}
+.about-icons a span.dribble:hover{
+    background-position: -248px -62px;
+}
+.about-icons a span.be{
+    background-position: -310px 0px;
+}
+.about-icons a span.be:hover{
+    background-position: -310px -62px;
+}
+/*--/about--*/
+/*--conatact--*/
+.contact {
+    text-align: center;
+    margin: 4em 0;
+}
+.contact h3 {
+    font-family: 'Abril Fatface', cursive;
+    font-size: 3.6em;
+    padding: .5em 0;
+    width: 62%;
+    margin: 5% auto 0;
+    color: #000;
+}
+.contact p {
+    margin-bottom: 5em;
+    font-size: 1.3em;
+}
+.contact h3 span.left-icon {
+    background: url(/src/blog/image/left.png) no-repeat 0px 10px;
+    width: 204px;
+    height: 50px;
+    display: block;
+    float: left;
+}
+.contact h3 span.right-icon {
+    background: url(/src/blog/image/right.png) no-repeat 0px 10px;
+    width: 204px;
+    height: 50px;
+    display: block;
+    float: right;
+}
+ul.form li {
+    list-style-type: none;
+    border: 4px solid #000;
+    width: 50%;
+    margin: 2% auto 0;
+}
+input.text {
+    border: 1px solid #000;
+    outline: none;
+    width: 98%;
+    margin: 4px;
+    padding: 1.2em;
+}
+textarea {
+    outline: none;
+    border: 1px solid #000;
+    padding: 1em;
+    width: 98%;
+    height: 200px;
+    margin: 4px;
+    resize: none;
+}
+.sub-button {
+    border: 4px solid #000;
+    width: 20%;
+    margin: 2% auto;
+}
+input[type="submit"] {
+    border: 1px solid #000;
+    outline: none;
+    background: none;
+    margin: 4px;
+    padding: 1em 4em;
+    font-size: 1.2em;
+    width: 96%;
+}
+input[type="submit"]:hover {
+    background: #000;
+    color: #fff;
+    transition:0.5s all;
+    -webkit-transition:0.5s all;
+    -moz-transition:0.5s all;
+    -o-transition:0.5s all;
+    -ms-transition:0.5s all;
+}
+.conatct-form {
+    margin-bottom: 5em;
+}
+.copyrights {
+    border-top: 1px solid #000;
+    padding: 2em 0 2em;
+}
+.copyrights p {
+    margin-bottom: 0;
+    font-size: 1.2em;
+}
+/*--/conatct--*/
+#toTop {
+    display: none;
+    text-decoration: none;
+    position: fixed;
+    bottom: 10px;
+    right: 25px;
+    overflow: hidden;
+    width: 47px;
+    height: 47px;
+    border: none;
+    text-indent: 100%;
+    background: url(/src/blog/image/top-arrow.png) no-repeat;
+}
+/*--top-top--*/
+/*--responsive--*/
+@media (max-width: 1024px){
+    .label-2 {
+        width: 941px;
+    }
+    .top-menu {
+        margin: 7em 0 0 0;
+    }
+    .nav li a {
+        margin: 0 49px;
+    }
+    div#banner-top h1 {
+        font-size: 4em;
+    }
+    div#banner-top {
+        padding-top: 4em;
+    }
+    div#banner-top h1 span.left-icon {
+        background: url(/src/blog/image/left.png) no-repeat 0px 3px;
+        width: 200px;
+        height: 59px;
+    }
+    div#banner-top h1 span.right-icon {
+        background: url(/src/blog/image/right.png) no-repeat 0px 6px;
+        width: 223px;
+        height: 58px;
+    }
+    div#banner-top h2 {
+        font-size: 3em;
+        width: 91%;
+        margin: 2% auto;
+    }
+    div#banner-top h2 span.left-icon {
+        background: url(/src/blog/image/left.png) no-repeat 0px 0px;
+        width: 202px;
+        height: 34px;
+    }
+    div#banner-top h2 span.right-icon {
+        background: url(/src/blog/image/right.png) no-repeat 0px 0px;
+        width: 241px;
+        height: 31px;
+    }
+    .work {
+        text-align: center;
+        margin: 8em 0 0;
+    }
+    .work h3 {
+        font-size: 3em;
+        width: 66%;
+    }
+    .about {
+        margin: 0 0;
+    }
+    .about h3 {
+        font-size: 3em;
+        width: 66%;
+    }
+    .contact h3 {
+        font-size: 3em;
+        width: 73%;
+    }
+    .contact p {
+        margin-bottom: 4em;
+    }
+    .copyrights {
+        padding: 2em 0 0em;
+    }
+    ul.nav li:nth-child(2) {
+        margin-right: 17em;
+    }
+}
+@media (max-width: 768px){
+    div#banner-top h1 span.left-icon {
+        background: url(/src/blog/image/left.png) no-repeat 27px -1px;
+        width: 174px;
+        height: 53px;
+        background-size: 150px;
+    }
+    div#banner-top h1 span.right-icon {
+        background: url(/src/blog/image/right.png) no-repeat 0px 0px;
+        width: 174px;
+        height: 53px;
+        background-size: 150px;
+    }
+    div#banner-top h1 {
+        font-size: 2.7em;
+        width: 100%;
+        margin: 0 auto;
+    }
+    div#banner-top h2 {
+        font-size: 2em;
+        width: 100%;
+        margin: 1% auto;
+    }
+    div#banner-top h2 span.left-icon {
+        background: url(/src/blog/image/left.png) no-repeat 0px -6px;
+        width: 202px;
+        height: 34px;
+    }
+    div#banner-top {
+        padding-top: 1.5em;
+    }
+    .work {
+        margin: 4em 0 0;
+    }
+    .label-2 {
+        width: 718px;
+        background: #000;
+    }
+    .nav li a {
+        margin: 0 21px;
+    }
+    ul.nav li:nth-child(2) {
+        margin-right: 15em;
+    }
+    .logo {
+        position: relative;
+        bottom: 72px;
+        left: 38%;
+        width: 11%;
+    }
+    .work h3 {
+        font-size: 2.6em;
+        width: 82%;
+    }
+    .work h3 span.left-icon {
+        background: url(/src/blog/image/left.png) no-repeat 0px 0px;
+        width: 204px;
+        height: 35px;
+    }
+    .work h3 span.right-icon {
+        background: url(/src/blog/image/right.png) no-repeat 0px 3px;
+        width: 204px;
+        height: 35px;
+    }
+    .work p {
+        font-size: 1.4em;
+        margin-bottom: 3em;
+    }
+    .project {
+        margin-bottom: 5em;
+    }
+    .about h3 {
+        font-size: 2.6em;
+        width: 78%;
+    }
+    .about h3 span.left-icon {
+        background: url(/src/blog/image/left.png) no-repeat 0px 1px;
+        width: 204px;
+        height: 41px;
+    }
+    .about h3 span.right-icon {
+        background: url(/src/blog/image/right.png) no-repeat 0px 6px;
+        width: 204px;
+        height: 39px;
+    }
+    .top-menu {
+        margin: 8% auto 3%;
+        width: 95%;
+    }
+    .about-left {
+        width: 42%;
+        float:left;
+    }
+    .about-right {
+        width: 100%;
+        font-size: 0.875em;
+        padding: 0;
+    }
+    .about-icons {
+        text-align: center;
+    }
+    .about-info {
+        margin: 5em 0 0;
+    }
+    .about-icons {
+        margin: 5em 0 0 0;
+    }
+    div#portfoliolist {
+        padding: 0 13px 0 20px;
+    }
+    .contact h3 {
+        font-size: 2.6em;
+        width: 88%;
+        margin: 4% auto 0;
+    }
+    .b-animate {
+        top: 21%;
+    }
+    ul.form li {
+        width: 68%;
+    }
+    .sub-button {
+        width: 30%;
+    }
+    .label-3 {
+        width: 96%;
+        margin: 0 auto;
+    }
+    .label-4 {
+        width: 96%;
+        margin: 0 auto;
+    }
+    .label-5 {
+        width: 96%;
+        margin: 0 auto;
+    }
+    .label-6 {
+        width: 96%;
+        margin: 0 auto;
+    }
+    .label-7 {
+        width: 96%;
+        margin: 0 auto;
+    }
+    .label-8 {
+        width: 96%;
+        margin: 0 auto;
+    }
+}
+@media (max-width: 640px){
+    .nav li a {
+        margin: 0 16px;
+    }
+    .nav {
+        padding: 1em 0;
+    }
+    .sub-button {
+        width: 35%;
+    }
+    .logo a img {
+        width: 100%;
+    }
+    ul.nav li:nth-child(2) {
+        margin-right: 9em;
+    }
+    .logo {
+        bottom: 50px;
+        left: 38%;
+        width: 17%;
+    }
+    div#banner-top h1 span.left-icon {
+        width: 151px;
+        background-size: 120px;
+    }
+    div#banner-top h1 {
+        font-size: 2.2em;
+    }
+    div#banner-top h1 span.right-icon {
+        width: 160px;
+        background-size: 120px;
+    }
+    div#banner-top h2 span.left-icon {
+        width: 151px;
+        height: 20px;
+        background-size: 154px;
+    }
+    div#banner-top h2 {
+        font-size: 1.5em;
+        width: 100%;
+        margin-left: 1.5em;
+    }
+    div#banner-top h2 span.right-icon {
+        width: 235px;
+        height: 31px;
+        background-size: 154px;
+    }
+    .work h3 {
+        font-size: 2.3em;
+        width: 94%;
+        margin: 2% auto 0;
+    }
+    .label-2 {
+        width: 594px;
+    }
+    .about h3 {
+        font-size: 2.3em;
+        width: 94%;
+    }
+    .about-icons {
+        margin: 2em 0 0 0;
+    }
+    .contact {
+        margin: 3em 0;
+    }
+    .contact h3 {
+        font-size: 2.3em;
+        width: 100%;
+        margin: 2% auto 0;
+    }
+    .contact h3 span.left-icon {
+        background: url(/src/blog/image/left.png) no-repeat 0px -1px;
+        height: 37px;
+    }
+    .contact h3 span.right-icon {
+        background: url(/src/blog/image/right.png) no-repeat 0px 4px;
+        height: 38px;
+    }
+    ul.form li {
+        width: 80%;
+    }
+    .about-right p {
+        padding: 0px 0;
+        font-size: 1.1em;
+    }
+    .top-menu {
+        margin: 8% auto 5%;
+        width: 96%;
+        height: 72px;
+    }
+}
+@media (max-width: 480px){
+    span.menu:before {
+        content: url(/src/blog/image/nav-icon.png);
+        cursor: pointer;	
+        height:32px;
+    }
+    .top-menu {
+        float: right;
+        margin: 0;
+        background: none;
+        border: none;
+    }
+    .top-menu  ul{
+        display:none;
+    }
+    .top-menu  ul li {
+        font-size: 12px;
+        display:inline-block;
+        width: 100%;
+        padding: 10px 0;
+    }
+    .top-menu ul li:hover {
+        background: #000;
+        color: #fff;
+    }
+    .top-menu ul li a {
+        padding: 3px;
+        font-size: 13px;
+        width: 100%;
+        font-weight: 600;
+        display: block;
+        margin: 0;
+        color: #fff;
+    }
+    .top-menu ul li a:hover{
+        color:#fff;
+    }
+    span.menu{
+        display:block;
+        float:right;
+        margin: 54px 16px 0 0;
+    }
+    .top-menu  ul{
+        margin: 0;
+        z-index: 999;
+        position: absolute;
+        width: 96%;
+        text-align: center;
+        top: 82.8%;
+        left: -6%;
+        background: rgba(0, 0, 0, 0.81);
+        width: 440px;
+    }
+    .nav {
+        padding: 0;
+    }
+    .label-2 {
+        width: 0;
+        background: none;
+    }
+    div#banner-top h1 {
+        font-size: 1.8em;
+    }
+    div#banner-top {
+        padding-top: 6.5em;
+    }
+    div#banner-top h1 span.left-icon {
+        width: 125px;
+        background-size: 99px;
+        height: 26px;
+    }
+    div#banner-top h1 {
+        font-size: 1.3em;
+    }
+    div#banner-top h1 span.right-icon {
+        width: 120px;
+        background-size: 102px;
+        height: 30px;
+    }
+    div#banner-top h2 span.left-icon {
+        display: none;
+    }
+    div#banner-top h2 {
+        font-size: 1em;
+        margin-left: 0;
+    }
+    div#banner-top h2 span.right-icon {
+        display: none;
+    }
+    .logo {
+        bottom: -64px;
+        left: 38%;
+        width: 17%;
+    }
+    div#banner-top {
+        padding-top: 9em;
+    }
+    .header-icons a span {
+        width: 32px;
+        height: 32px;
+        background-size: 193px;
+    }
+    .header-icons a span.fb:hover {
+        background-position: 0px -32px;
+    }
+    .header-icons a span.tw {
+        background-position: -32px 0px;
+    }
+    .header-icons a span.tw:hover {
+        background-position: -32px -32px;
+    }
+    .header-icons a span.pin {
+        background-position: -65px 0px;
+    }
+    .header-icons a span.pin:hover {
+        background-position: -65px -32px;
+    }
+    .header-icons a span.likdin {
+        background-position: -97px 0px;
+    }
+    .header-icons a span.likdin:hover {
+        background-position: -97px -32px;
+    }
+    .header-icons a span.dribble {
+        background-position: -129px 0px;
+    }
+    .header-icons a span.dribble:hover {
+        background-position: -129px -32px;
+    }
+    .header-icons a span.be {
+        background-position: -162px 0px;
+    }
+    .header-icons a span.be:hover {
+        background-position: -162px -32px;
+    }
+    .work {
+        margin: 2em 0 0;
+    }
+    .work h3 span.right-icon {
+        display: none;
+    }
+    .work h3 span.left-icon {
+        display: none;
+    }
+    .about h3 span.left-icon{
+        display:none;
+    }
+    .about h3 span.right-icon{
+        display:none;
+    }
+    .contact h3 span.left-icon{
+        display:none;
+    }
+    .contact h3 span.right-icon{
+        display:none;
+    }
+    .work p {
+        font-size: 1.1em;
+        margin-bottom: 2em;
+    }
+    .work h3 {
+        margin: 0% auto 0;
+    }
+    .project {
+        margin-bottom: 2em;
+    }
+    #portfoliolist .portfolio {
+        width: 49%;
+    }
+    .about p {
+        font-size: 1.1em;
+    }
+    .about-icons a span {
+        width: 32px;
+        height: 32px;
+        background-size: 193px;
+    }
+    .about-icons a span.fb:hover {
+        background-position: 0px -32px;
+    }
+    .about-icons a span.tw {
+        background-position: -32px 0px;
+    }
+    .about-icons a span.tw:hover {
+        background-position: -32px -32px;
+    }
+    .about-icons a span.pin {
+        background-position: -65px 0px;
+    }
+    .about-icons a span.pin:hover {
+        background-position: -65px -32px;
+    }
+    .about-icons a span.likdin {
+        background-position: -97px 0px;
+    }
+    .about-icons a span.likdin:hover {
+        background-position: -97px -32px;
+    }
+    .about-icons a span.dribble {
+        background-position: -129px 0px;
+    }
+    .about-icons a span.dribble:hover {
+        background-position: -129px -32px;
+    }
+    .about-icons a span.be {
+        background-position: -162px 0px;
+    }
+    .about-icons a span.be:hover {
+        background-position: -162px -32px;
+    }
+    .about-info {
+        margin: 2em 0 0;
+    }
+    .contact {
+        margin: 2em 0;
+    }
+    .contact p {
+        margin-bottom: 2em;
+        font-size: 1.1em;
+    }
+    ul.form li {
+        width: 90%;
+    }
+    .sub-button {
+        width: 50%;
+    }
+    .contact p {
+        margin-bottom: 4em;
+        font-size: 0.9em;
+    }
+    .conatct-form {
+        margin-bottom: 1em;
+    }
+    textarea {
+        margin: 4px 0px -3px 0;
+    }
+}
+@media (max-width: 320px){
+    div#banner-top h1 span.left-icon {
+        background: url(/src/blog/image/left.png) no-repeat -4px 3px;
+        width: 46px;
+        background-size: 50px;
+        height: 26px;
+    }
+    div#banner-top h1 span.right-icon {
+        width: 42px;
+        background-size: 56px;
+        height: 30px;
+    }
+    .header-icons {
+        margin: 1em 0 0;
+    }
+    .work {
+        margin: 1.5em 0 0;
+    }
+    .work h3 {
+        font-size: 1.4em;
+        width: 100%;
+    }
+    .work p {
+        font-size: .81em;
+        margin-bottom: 1em;
+    }
+    span.menu {
+        margin: 39px 8px 0 0;
+    }
+    .logo {
+        bottom: -46px;
+        left: 31%;
+        width: 35%;
+    }
+    .top-menu ul {
+        top: 95.8%;
+        width: 285px;
+    }
+    ul.nav li:nth-child(2) {
+        margin-right: 0;
+    }
+    div#banner-top {
+        padding-top: 7.5em;
+    }
+    .about h3 {
+        font-size: 1.4em;
+        width: 100%;
+    }
+    .about p {
+        font-size: .875em;
+    }
+    .about-left {
+        width: 100%;
+        float: none;
+        margin-bottom: 18px;
+        padding: 0;
+    }
+    .contact h3 {
+        font-size: 1.4em;
+    }
+    .contact p {
+        margin-bottom: 1em;
+        font-size: .875em;
+        line-height: 1.8em;
+    }
+    ul.form li {
+        width: 98%;
+        border: 3px solid #000;
+    }
+    input.text {
+        width: 97%;
+        padding: .5em;
+    }
+    textarea {
+        padding: .5em;
+        width: 96%;
+        height: 125px;
+    }
+    input[type="submit"] {
+        padding: .5em 0em;
+        font-size: 1.1em;
+        width: 94%;
+    }
+    .b-animate {
+        font-size: 12px;
+        width: 74%;
+    }
+    .contact {
+        margin: 1.5em 0;
+    }
+    .copyrights {
+        padding: 2em 0 1em;
+    }
+    div#portfoliolist {
+        padding: 0 0px 0 5px;
+    }
+    .sub-button {
+        border: 3px solid #000;
+    }
+}
+/*--/responsive--*/

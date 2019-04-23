@@ -1,0 +1,79 @@
+i{font-style:normal}
+#login{background:#179898}
+.login{width:260px;margin-top:200px!important;margin:0 auto;background:#fff;padding:60px 80px}
+.login h2{font-size:28px;font-weight:100;color:#333;text-align:center;margin-bottom:50px}
+.header{position:fixed;z-index:10000;left:0;top:0;width:100%;height:65px;background-color:#23262E}
+.header .main{position:relative;margin:0 auto;min-height:0}
+.logo img{margin-left: 20px;float: left;}
+.header .main span{margin-left: 20px;font-size: 16px;color: #fff;line-height: 65px;}
+.nav{position:absolute;left:220px;top:18px}
+.nav a{padding:0 20px;font-size:14px;color:#999}
+.nav a i{position:relative;top:5px;padding-right:10px;font-size:18px;font-size:26px}
+.nav a .icon-shezhi,.nav a .icon-shouye{top:2px}
+.nav a:hover{transition:all .4s}
+.nav .nav-this,.nav a:hover{color:#fff}
+.nav-user{position:absolute;top:12px;right:20px}
+.avatar,.avatar *,.nav-user .nav,.nav-user .unlogin,.nav-user span,.out-login{display:inline-block;vertical-align:middle}
+.nav-user .unlogin{margin-right:10px;margin-top:8px}
+.nav-user span{position:relative}
+.nav-user span a{padding:0 10px;color:#A9B7B7}
+.nav-user span a:hover{color:#fff}
+.nav-user a:hover{color:#fff}
+.nav-user .nav{position:relative;top:-2px;left:auto;right:0;margin-left:30px}
+.nav-user .nav a{padding:0 10px}
+.nav-user .unlogin i{margin-bottom:12px}
+.avatar{color:#999;font-size:14px}
+.avatar img{width:42px;height:42px;border-radius:100%}
+.avatar cite,.avatar i{margin-left:10px}
+.avatar i{line-height:20px;color:#FF7200}
+.fly-panel{background-color:#fff;border-radius:2px;padding:20px}
+.fly-panel[pad20]{padding:20px}
+.fly-panel-title{position:relative;height:40px;line-height:40px;padding:0 15px;margin-bottom:5px;background-color:#f8f8f8;color:#333;border-radius:2px 2px 0 0;font-size:14px}
+body .fly-user-main{width:100%;height:100%;margin:0 auto}
+.fly-user-main>.layui-nav{position:fixed;left:0;top:65px;z-index:1000;height:100%;padding:0}
+.fly-user-main>.layui-nav .layui-icon{position:relative;top:2px;font-size:20px;margin-right:10px}
+.fly-user-main>.fly-panel{margin:0 0 10px 200px}
+.tpt—index tr{font-size:13px;line-height:38px;border-bottom:1px solid #EAEAEA}
+.tpt—index table{margin-bottom:10px}
+.tpt—index tr:last-child{border:none}
+.tpt—admin .tpt—btn a{display:inline-block;height:38px;line-height:38px;padding:0 18px;background-color:#009688;color:#fff;white-space:nowrap;text-align:center;font-size:14px;border:none;border-radius:2px;cursor:pointer;opacity:.9;filter:alpha(opacity=90)}
+.tpt—admin .tpt—btn a:hover{opacity:.8;filter:alpha(opacity=80);color:#fff}
+.tpt—admin .tpt—btn{margin-bottom:20px}
+.tpt—admin tr{border:1px solid #EAEAEA}
+.tpt—admin tr th{border-left:1px solid #EAEAEA;background:#F9F9F9;line-height:45px}
+.tpt—admin tr td{border-left:1px solid #EAEAEA;line-height:40px}
+.tpt—admin button{margin-bottom:20px}
+.tpt-rap {padding-left: 20px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;max-width: 100px;}
+.tpt-raps {white-space: nowrap;overflow: hidden;text-overflow: ellipsis;max-width: 100px;}
+#image{background-color: #ECECEC;color: #333;}
+.layui-btn+.layui-btn{margin-left:0}
+.layui-nav{border-radius:0}
+.file-box i{position:absolute;left:16px;top:11px;font-size:16px;color:#5FB878}
+.file-box .file-btn{width:72px!important;height:36px!important;line-height:36px!important;background:#fff;border:1px solid #e6e6e6;padding-left:35px;border-radius:2px}
+#uploadify{width:72px!important;height:36px!important}
+.layui-btn-mini{padding:0 10px}
+.admin-iframe{position:absolute;border:0;width:100%;height:100%}
+.layui-body{top:65px}
+.tpt-warms{background-color:#393D49}
+.tpt-warmd{background-color:#c00}
+.tpt-warmf{background-color:#009688}
+.tpt-warmc{background-color:#c2c2c2}
+.layui-form-switch{margin-top:0}
+.layui-form-switch em{right:7px}
+.layui-form-switch i{left:9px}
+.layui-form-switch{width:50px}
+.layui-form-onswitch em{left:10px}
+.layui-form-onswitch i{left:38px}
+.pagination{display:inline-block;padding-left:0;margin:20px 0 0 0;border-radius:4px;float:right}
+.pagination li{display:inline}
+.pagination li a,.pagination li span{position:relative;float:left;padding:6px 12px;line-height:1.42857143;color:#393D49;background:#fff;margin:0 0 0 8px;border:1px solid #eee}
+.pagination li a:hover{color:#fff;background:#009688}
+.pagination .active span{background:#009688;color:#fff}
+.pagination .disabled{display:none}
+@media screen and (max-width:750px){.fly-user-main>.layui-nav{left:-300px;transition:all .3s;-webkit-transition:all .3s}
+.fly-user-main>.fly-panel-user{width:auto;margin-left:0;transition:all .3s;-webkit-transition:all .3s}
+.avatar{display:none}
+.nav-user{top:19px;right:20px}
+.layui-body{left:0}
+}
+.layui-input{line-height: 38px;}
