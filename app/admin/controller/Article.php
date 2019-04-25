@@ -91,9 +91,6 @@ class Article extends Adminbase {
 		if ($file) {
 			$file_path = \think\facade\App::getRootPath() . 'public' . DIRECTORY_SEPARATOR . 'uploads';
 			$img_path = DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR;
-			var_dump($file_path);
-			var_dump($img_path);
-			exit;
 			$img_info = $file->move($file_path);
 			if ($img_info) {
 				$img = $img_path . $img_info->getSaveName();
