@@ -74,7 +74,7 @@ class Background extends Adminbase {
 				$data['c_time'] = date('Y-m-d H:i:s');
 				$x = $this->mod->insertGetId($data);
 			}
-			$x and $this->success() or $this->error();
+			$x and success('修改成功') or error('修改失败');
 		} else {
 			View::assign([
 				'info' => $info,

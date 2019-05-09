@@ -122,9 +122,10 @@ trait RelationShip
      * 查询当前模型的关联数据
      * @access public
      * @param  array $relations 关联名
+     * @param  array $withRelationAttr   关联获取器
      * @return void
      */
-    public function relationQuery(array $relations): void
+    public function relationQuery(array $relations, array $withRelationAttr = []): void
     {
         foreach ($relations as $key => $relation) {
             $subRelation = '';
@@ -143,9 +144,16 @@ trait RelationShip
                 list($relation, $subRelation) = explode('.', $relation, 2);
             }
 
-            $method = App::parseName($relation, 1, false);
+            $method       = App::parseName($relation, 1, false);
+            $relationName = App::parseName($relation);
 
-            $this->relation[$relation] = $this->$method()->getRelation($subRelation, $closure);
+            $relationResult = $this->$method();
+
+            if (isset($withRelationAttr[$relationName])) {
+                $relationResult->getQuery()->withAttr($withRelationAttr[$relationName]);
+            }
+
+            $this->relation[$relation] = $relationResult->getRelation($subRelation, $closure);
         }
     }
 
@@ -232,7 +240,7 @@ trait RelationShip
             $relationResult = $this->$relation();
 
             if (isset($withRelationAttr[$relationName])) {
-                $relationResult->withAttr($withRelationAttr[$relationName]);
+                $relationResult->getQuery()->withAttr($withRelationAttr[$relationName]);
             }
 
             $relationResult->eagerlyResultSet($resultSet, $relation, $subRelation, $closure, $join);
@@ -274,7 +282,7 @@ trait RelationShip
             $relationResult = $this->$relation();
 
             if (isset($withRelationAttr[$relationName])) {
-                $relationResult->withAttr($withRelationAttr[$relationName]);
+                $relationResult->getQuery()->withAttr($withRelationAttr[$relationName]);
             }
 
             $relationResult->eagerlyResult($result, $relation, $subRelation, $closure, $join);
@@ -579,7 +587,7 @@ trait RelationShip
     /**
      * 智能获取关联模型数据
      * @access protected
-     * @param  Relation  $modelRelation 模型关联对象
+     * @param  Relation $modelRelation 模型关联对象
      * @return mixed
      */
     protected function getRelationData(Relation $modelRelation)
@@ -589,7 +597,7 @@ trait RelationShip
         }
 
         // 获取关联数据
-        return $modelRelation->getModel()->getRelation();
+        return $modelRelation->getRelation();
     }
 
     /**

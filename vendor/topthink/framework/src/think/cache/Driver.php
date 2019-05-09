@@ -13,6 +13,7 @@ declare (strict_types = 1);
 namespace think\cache;
 
 use think\Container;
+use think\exception\InvalidArgumentException;
 
 /**
  * 缓存基础类
@@ -48,12 +49,6 @@ abstract class Driver extends SimpleCache
      * @var array
      */
     protected $tag;
-
-    /**
-     * 序列化方法
-     * @var array
-     */
-    protected static $serialize = ['\think\App::serialize', '\think\App::unserialize', 'think_serialize:', 16];
 
     /**
      * 获取有效期
@@ -98,11 +93,39 @@ abstract class Driver extends SimpleCache
     }
 
     /**
+     * 追加（数组）缓存
+     * @access public
+     * @param  string        $name 缓存变量名
+     * @param  mixed         $value  存储数据
+     * @param  int|\DateTime $expire  有效时间 0为永久
+     * @return array
+     */
+    public function push($name, $value, $expire = null): array
+    {
+        $item = $this->get($name, []);
+
+        if (!is_array($item)) {
+            throw new InvalidArgumentException('only array cache can be push');
+        }
+
+        $item[] = $value;
+
+        if (count($item) > 1000) {
+            array_shift($item);
+        }
+
+        $item = array_unique($item);
+
+        $this->set($name, $item, $expire);
+        return $item;
+    }
+
+    /**
      * 如果不存在则写入缓存
      * @access public
-     * @param  string    $name 缓存变量名
-     * @param  mixed     $value  存储数据
-     * @param  int       $expire  有效时间 0为永久
+     * @param  string $name 缓存变量名
+     * @param  mixed  $value  存储数据
+     * @param  int    $expire  有效时间 0为永久
      * @return mixed
      */
     public function remember(string $name, $value, $expire = null)
@@ -143,7 +166,7 @@ abstract class Driver extends SimpleCache
     /**
      * 缓存标签
      * @access public
-     * @param  string|array        $name 标签名
+     * @param  string|array $name 标签名
      * @return $this
      */
     public function tag($name)
@@ -168,22 +191,8 @@ abstract class Driver extends SimpleCache
             $this->tag = null;
 
             foreach ($tags as $tag) {
-                $key = $this->getTagKey($tag);
-
-                if ($this->has($key)) {
-                    $value   = explode(',', $this->get($key));
-                    $value[] = $name;
-
-                    if (count($value) > 1000) {
-                        array_shift($value);
-                    }
-
-                    $value = implode(',', array_unique($value));
-                } else {
-                    $value = $name;
-                }
-
-                $this->set($key, $value, 0);
+                $key   = $this->getTagkey($tag);
+                $value = $this->push($key, $name, 0);
             }
         }
     }
@@ -196,16 +205,16 @@ abstract class Driver extends SimpleCache
      */
     protected function getTagItems(string $tag): array
     {
-        $key   = $this->getTagkey($tag);
-        $value = $this->get($key);
-
-        if ($value) {
-            return array_filter(explode(',', $value));
-        } else {
-            return [];
-        }
+        $key = $this->getTagkey($tag);
+        return $this->get($key, []);
     }
 
+    /**
+     * 获取实际标签名
+     * @access protected
+     * @param  string $tag 标签名
+     * @return string
+     */
     protected function getTagKey(string $tag): string
     {
         return $this->options['tag_prefix'] . md5($tag);
@@ -214,47 +223,27 @@ abstract class Driver extends SimpleCache
     /**
      * 序列化数据
      * @access protected
-     * @param  mixed $data
+     * @param  mixed $data 缓存数据
      * @return string
      */
-    protected function serialize($data)
+    protected function serialize($data): string
     {
-        if (is_scalar($data) || !$this->options['serialize']) {
-            return $data;
-        }
+        $serialize = $this->options['serialize'][0] ?? '\think\App::serialize';
 
-        $serialize = self::$serialize[0];
-
-        return self::$serialize[2] . $serialize($data);
+        return $serialize($data);
     }
 
     /**
      * 反序列化数据
      * @access protected
-     * @param  string $data
+     * @param  string $data 缓存数据
      * @return mixed
      */
-    protected function unserialize($data)
+    protected function unserialize(string $data)
     {
-        if ($this->options['serialize'] && 0 === strpos($data, self::$serialize[2])) {
-            $unserialize = self::$serialize[1];
-            return $unserialize(substr($data, self::$serialize[3]));
-        }
+        $unserialize = $this->options['serialize'][1] ?? '\think\App::unserialize';
 
-        return $data;
-    }
-
-    /**
-     * 注册序列化机制
-     * @access public
-     * @param  callable $serialize      序列化方法
-     * @param  callable $unserialize    反序列化方法
-     * @param  string   $prefix         序列化前缀标识
-     * @return void
-     */
-    public static function registerSerialize(callable $serialize, callable $unserialize, string $prefix = 'think_serialize:'): void
-    {
-        self::$serialize = [$serialize, $unserialize, $prefix, strlen($prefix)];
+        return $unserialize($data);
     }
 
     /**
@@ -268,13 +257,28 @@ abstract class Driver extends SimpleCache
         return $this->handler;
     }
 
+    /**
+     * 返回缓存读取次数
+     * @access public
+     * @return int
+     */
     public function getReadTimes(): int
     {
         return $this->readTimes;
     }
 
+    /**
+     * 返回缓存写入次数
+     * @access public
+     * @return int
+     */
     public function getWriteTimes(): int
     {
         return $this->writeTimes;
+    }
+
+    public function __call($method, $args)
+    {
+        return call_user_func_array([$this->handler, $method], $args);
     }
 }

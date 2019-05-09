@@ -12,6 +12,8 @@ declare (strict_types = 1);
 
 namespace think\route\dispatch;
 
+use ReflectionClass;
+use ReflectionException;
 use ReflectionMethod;
 use think\App;
 use think\exception\ClassNotFoundException;
@@ -62,18 +64,27 @@ class Controller extends Dispatch
             throw new HttpException(404, 'controller not exists:' . $e->getClass());
         }
 
+        // 注册控制器中间件
+        $this->registerControllerMiddleware($instance);
+
         $this->app->middleware->controller(function (Request $request, $next) use ($instance) {
             // 获取当前操作名
             $action = $this->actionName . $this->rule->config('action_suffix');
 
             if (is_callable([$instance, $action])) {
-                // 严格获取当前操作方法名
-                $reflect    = new ReflectionMethod($instance, $action);
-                $actionName = $reflect->getName();
-                $this->request->setAction($actionName);
-
                 // 自动获取请求变量
                 $vars = array_merge($this->request->param(), $this->param);
+
+                try {
+                    $reflect = new ReflectionMethod($instance, $action);
+                    // 严格获取当前操作方法名
+                    $actionName = $reflect->getName();
+                    $this->request->setAction($actionName);
+                } catch (ReflectionException $e) {
+                    $reflect = new ReflectionMethod($instance, '__call');
+                    $vars    = [$action, $vars];
+                    $this->request->setAction($action);
+                }
             } else {
                 // 操作不存在
                 throw new HttpException(404, 'method not exists:' . get_class($instance) . '->' . $action . '()');
@@ -85,6 +96,38 @@ class Controller extends Dispatch
         });
 
         return $this->app->middleware->dispatch($this->request, 'controller');
+    }
+
+    /**
+     * 使用反射机制注册控制器中间件
+     * @access public
+     * @param  object $controller 控制器实例
+     * @return void
+     */
+    protected function registerControllerMiddleware($controller): void
+    {
+        $class = new ReflectionClass($controller);
+
+        if ($class->hasProperty('middleware')) {
+            $reflectionProperty = $class->getProperty('middleware');
+            $reflectionProperty->setAccessible(true);
+
+            $middlewares = $reflectionProperty->getValue($controller);
+
+            foreach ($middlewares as $key => $val) {
+                if (!is_int($key)) {
+                    if (isset($val['only']) && !in_array($this->request->action(), $val['only'])) {
+                        continue;
+                    } elseif (isset($val['except']) && in_array($this->request->action(), $val['except'])) {
+                        continue;
+                    } else {
+                        $val = $key;
+                    }
+                }
+
+                $this->app->middleware->controller($val);
+            }
+        }
     }
 
     /**

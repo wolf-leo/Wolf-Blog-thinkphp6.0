@@ -2,7 +2,7 @@
 
 namespace app\common\controller;
 
-use think\Controller;
+use think\console\command\make\Controller;
 
 class Base extends Controller {
 

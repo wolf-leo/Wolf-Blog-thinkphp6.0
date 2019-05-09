@@ -261,7 +261,7 @@ class Route
     }
 
     /**
-     * 设置当前域名
+     * 设置当前分组
      * @access public
      * @param RuleGroup $group 域名
      * @return void
@@ -272,13 +272,13 @@ class Route
     }
 
     /**
-     * 获取当前分组
+     * 获取指定标识的路由分组 不指定则获取当前分组
      * @access public
      * @return RuleGroup
      */
-    public function getGroup(): RuleGroup
+    public function getGroup(string $name = null)
     {
-        return $this->group;
+        return $name ? $this->ruleName->getGroup($name) : $this->group;
     }
 
     /**
@@ -360,9 +360,9 @@ class Route
     }
 
     /**
-     * 获取域名
+     * 获取RuleName对象
      * @access public
-     * @return array
+     * @return RuleName
      */
     public function getRuleName(): RuleName
     {
@@ -404,7 +404,7 @@ class Route
     public function getDomainBind(string $domain = null)
     {
         if (is_null($domain)) {
-            $domain = '-';
+            $domain = $this->host;
         } elseif (false === strpos($domain, '.')) {
             $domain .= '.' . $this->request->rootDomain();
         }
@@ -840,9 +840,9 @@ class Route
                 $domain3 = array_pop($domain);
             }
 
-            if ($subDomain && isset($this->domains[$subDomain])) {
+            if (isset($this->domains[$this->host])) {
                 // 子域名配置
-                $item = $this->domains[$subDomain];
+                $item = $this->domains[$this->host];
             } elseif (isset($this->domains['*.' . $domain2]) && !empty($domain3)) {
                 // 泛三级域名
                 $item      = $this->domains['*.' . $domain2];

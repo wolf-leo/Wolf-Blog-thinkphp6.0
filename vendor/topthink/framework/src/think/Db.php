@@ -150,6 +150,16 @@ class Db
     }
 
     /**
+     * 重置查询次数
+     * @access public
+     * @return void
+     */
+    public function clearQueryTimes(): void
+    {
+        $this->queryTimes = 0;
+    }
+
+    /**
      * 获得查询次数
      * @access public
      * @return integer
@@ -200,7 +210,8 @@ class Db
      */
     public function buildQuery($connection = [])
     {
-        return $this->connect($connection)->newQuery();
+        $connection = $this->instance($this->parseConfig($connection));
+        return $this->newQuery($connection);
     }
 
     /**

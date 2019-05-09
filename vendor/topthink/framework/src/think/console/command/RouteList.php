@@ -88,7 +88,7 @@ class RouteList extends Command
         if ($this->input->hasOption('more')) {
             $header = ['Rule', 'Route', 'Method', 'Name', 'Domain', 'Option', 'Pattern'];
         } else {
-            $header = ['Rule', 'Route', 'Method', 'Name', 'Domain'];
+            $header = ['Rule', 'Route', 'Method', 'Name'];
         }
 
         $table->setHeader($header);
@@ -96,22 +96,20 @@ class RouteList extends Command
         $routeList = $this->app->route->getRuleList();
         $rows      = [];
 
-        foreach ($routeList as $domain => $items) {
-            foreach ($items as $item) {
-                $item['route'] = $item['route'] instanceof \Closure ? '<Closure>' : $item['route'];
+        foreach ($routeList as $item) {
+            $item['route'] = $item['route'] instanceof \Closure ? '<Closure>' : $item['route'];
 
-                if ($this->input->hasOption('more')) {
-                    $item = [$item['rule'], $item['route'], $item['method'], $item['name'], $domain, json_encode($item['option']), json_encode($item['pattern'])];
-                } else {
-                    $item = [$item['rule'], $item['route'], $item['method'], $item['name'], $domain];
-                }
-
-                $rows[] = $item;
+            if ($this->input->hasOption('more')) {
+                $item = [$item['rule'], $item['route'], $item['method'], $item['name'], $item['domain'], json_encode($item['option']), json_encode($item['pattern'])];
+            } else {
+                $item = [$item['rule'], $item['route'], $item['method'], $item['name']];
             }
+
+            $rows[] = $item;
         }
 
         if ($this->input->getOption('sort')) {
-            $sort = $this->input->getOption('sort');
+            $sort = strtolower($this->input->getOption('sort'));
 
             if (isset($this->sortBy[$sort])) {
                 $sort = $this->sortBy[$sort];

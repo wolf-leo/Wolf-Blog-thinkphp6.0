@@ -702,14 +702,14 @@ class Request
     /**
      * 当前请求的资源类型
      * @access public
-     * @return false|string
+     * @return string
      */
-    public function type()
+    public function type(): string
     {
         $accept = $this->server('HTTP_ACCEPT');
 
         if (empty($accept)) {
-            return false;
+            return '';
         }
 
         foreach ($this->mimeType as $key => $val) {
@@ -721,7 +721,7 @@ class Request
             }
         }
 
-        return false;
+        return '';
     }
 
     /**
@@ -1287,7 +1287,14 @@ class Request
             }
         }
 
-        return $this->filterData($data, $filter, $name, $default);
+        $data = $this->filterData($data, $filter, $name, $default);
+
+        if (isset($type) && $data !== $default) {
+            // 强制类型转换
+            $this->typeCast($data, $type);
+        }
+
+        return $data;
     }
 
     protected function filterData($data, $filter, $name, $default)
@@ -1303,6 +1310,43 @@ class Request
         }
 
         return $data;
+    }
+
+    /**
+     * 强制类型转换
+     * @access public
+     * @param  string $data
+     * @param  string $type
+     * @return mixed
+     */
+    private function typeCast(&$data, string $type)
+    {
+        switch (strtolower($type)) {
+            // 数组
+            case 'a':
+                $data = (array) $data;
+                break;
+            // 数字
+            case 'd':
+                $data = (int) $data;
+                break;
+            // 浮点
+            case 'f':
+                $data = (float) $data;
+                break;
+            // 布尔
+            case 'b':
+                $data = (boolean) $data;
+                break;
+            // 字符串
+            case 's':
+                if (is_scalar($data)) {
+                    $data = (string) $data;
+                } else {
+                    throw new \InvalidArgumentException('variable type error：' . gettype($data));
+                }
+                break;
+        }
     }
 
     /**
@@ -1410,7 +1454,15 @@ class Request
      */
     public function has(string $name, string $type = 'param', bool $checkEmpty = false): bool
     {
+        if (!in_array($type, ['param', 'get', 'post', 'put', 'patch', 'route', 'delete', 'cookie', 'session', 'env', 'request', 'server', 'header', 'file'])) {
+            return false;
+        }
+
         $param = empty($this->$type) ? $this->$type() : $this->$type;
+
+        if (is_object($param)) {
+            return $param->has($name);
+        }
 
         // 按.拆分成多维数组进行判断
         foreach (explode('.', $name) as $val) {
@@ -1505,8 +1557,9 @@ class Request
     public function isJson(): bool
     {
         $contentType = $this->contentType();
+        $acceptType  = $this->type();
 
-        return false !== strpos($contentType, 'json');
+        return false !== strpos($contentType, 'json') || false !== strpos($acceptType, 'json');
     }
 
     /**
@@ -1916,18 +1969,55 @@ class Request
      * @param  mixed  $type 令牌生成方法
      * @return string
      */
-    public function token(string $name = '__token__', $type = 'md5'): string
+    public function buildToken(string $name = '__token__', $type = 'md5'): string
     {
         $type  = is_callable($type) ? $type : 'md5';
         $token = call_user_func($type, $this->server('REQUEST_TIME_FLOAT'));
 
-        if ($this->isAjax()) {
-            header($name . ': ' . $token);
-        }
-
         $this->session->set($name, $token);
 
         return $token;
+    }
+
+    /**
+     * 检查请求令牌
+     * @access public
+     * @param  string $name 令牌名称
+     * @param  array  $data 表单数据
+     * @return bool
+     */
+    public function checkToken(string $token = '__token__', array $data = []): bool
+    {
+        if (in_array($this->method(), ['GET', 'HEAD', 'OPTIONS'], true)) {
+            return true;
+        }
+
+        if (!$this->session->has($token)) {
+            // 令牌数据无效
+            return false;
+        }
+
+        // Header验证
+        if ($this->header('X-CSRF-TOKEN') && $this->session->get($token) === $this->header('X-CSRF-TOKEN')) {
+            // 防止重复提交
+            $this->session->delete($token); // 验证完成销毁session
+            return true;
+        }
+
+        if (empty($data)) {
+            $data = $this->post();
+        }
+
+        // 令牌验证
+        if (isset($data[$token]) && $this->session->get($token) === $data[$token]) {
+            // 防止重复提交
+            $this->session->delete($token); // 验证完成销毁session
+            return true;
+        }
+
+        // 开启TOKEN重置
+        $this->session->delete($token);
+        return false;
     }
 
     /**

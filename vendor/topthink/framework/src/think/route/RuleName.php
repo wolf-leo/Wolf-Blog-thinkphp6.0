@@ -17,9 +17,23 @@ namespace think\route;
  */
 class RuleName
 {
+    /**
+     * 路由标识
+     * @var array
+     */
     protected $item = [];
 
+    /**
+     * 路由规则
+     * @var array
+     */
     protected $rule = [];
+
+    /**
+     * 路由分组
+     * @var array
+     */
+    protected $group = [];
 
     /**
      * 注册路由标识
@@ -37,6 +51,18 @@ class RuleName
         } else {
             $this->item[$name][] = $value;
         }
+    }
+
+    /**
+     * 注册路由分组标识
+     * @access public
+     * @param  string    $name  路由分组标识
+     * @param  RuleGroup $group 路由分组
+     * @return void
+     */
+    public function setGroup(string $name, RuleGroup $group): void
+    {
+        $this->group[strtolower($name)] = $group;
     }
 
     /**
@@ -63,6 +89,17 @@ class RuleName
     }
 
     /**
+     * 根据路由分组标识获取分组
+     * @access public
+     * @param  string $name 路由分组标识
+     * @return RuleGroup|null
+     */
+    public function getGroup(string $name)
+    {
+        return $this->group[strtolower($name)] ?? null;
+    }
+
+    /**
      * 清空路由规则
      * @access public
      * @return void
@@ -86,7 +123,7 @@ class RuleName
             foreach ($rules as $item) {
                 $val = [];
 
-                foreach (['method', 'rule', 'name', 'route', 'pattern', 'option'] as $param) {
+                foreach (['method', 'rule', 'name', 'route', 'domain', 'pattern', 'option'] as $param) {
                     $call        = 'get' . $param;
                     $val[$param] = $item->$call();
                 }

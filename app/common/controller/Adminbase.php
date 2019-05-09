@@ -26,7 +26,7 @@ class Adminbase extends Base {
 		$admin_uid = session('admin_uid');
 		if (empty($admin_uid)) {
 			$url = url('Login/index');
-			$this->redirect($url);
+			return redirect($url);
 			exit;
 		}
 	}

@@ -32,7 +32,7 @@ class Login extends Adminbase {
 	public function out() {
 		session('admin_uid', NULL);
 		$url = url("login/index");
-		$this->redirect($url);
+		return redirect($url);
 	}
 
 }

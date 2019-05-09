@@ -13,12 +13,13 @@ declare (strict_types = 1);
 namespace think\view\driver;
 
 use think\App;
+use think\contract\TemplateHandlerInterface;
 use think\template\exception\TemplateNotFoundException;
 
 /**
  * PHP原生模板驱动
  */
-class Php
+class Php implements TemplateHandlerInterface
 {
     protected $template;
     protected $content;
@@ -26,7 +27,7 @@ class Php
 
     // 模板引擎参数
     protected $config = [
-        // 默认模板渲染规则 1 解析为小写+下划线 2 全部转换小写
+        // 默认模板渲染规则 1 解析为小写+下划线 2 全部转换小写 3 保持操作方法
         'auto_rule'   => 1,
         // 视图基础目录（集中式）
         'view_base'   => '',
@@ -63,8 +64,8 @@ class Php
     /**
      * 渲染模板文件
      * @access public
-     * @param  string    $template 模板文件
-     * @param  array     $data 模板变量
+     * @param  string $template 模板文件
+     * @param  array  $data 模板变量
      * @return void
      */
     public function fetch(string $template, array $data = []): void
@@ -93,8 +94,8 @@ class Php
     /**
      * 渲染模板内容
      * @access public
-     * @param  string    $content 模板内容
-     * @param  array     $data 模板变量
+     * @param  string $content 模板内容
+     * @param  array  $data 模板变量
      * @return void
      */
     public function display(string $content, array $data = []): void
@@ -142,7 +143,15 @@ class Php
             if ($controller) {
                 if ('' == $template) {
                     // 如果模板文件名为空 按照默认规则定位
-                    $template = str_replace('.', DIRECTORY_SEPARATOR, $controller) . $depr . (1 == $this->config['auto_rule'] ? App::parseName($request->action(true)) : $request->action());
+                    if (2 == $this->config['auto_rule']) {
+                        $template = $request->action(true);
+                    } elseif (3 == $this->config['auto_rule']) {
+                        $template = $request->action();
+                    } else {
+                        $template = App::parseName($request->action());
+                    }
+
+                    $template = str_replace('.', DIRECTORY_SEPARATOR, $controller) . $depr . $template;
                 } elseif (false === strpos($template, $depr)) {
                     $template = str_replace('.', DIRECTORY_SEPARATOR, $controller) . $depr . $template;
                 }
@@ -157,7 +166,7 @@ class Php
     /**
      * 配置模板引擎
      * @access private
-     * @param  array  $config 参数
+     * @param  array $config 参数
      * @return void
      */
     public function config(array $config): void
@@ -168,8 +177,8 @@ class Php
     /**
      * 获取模板引擎配置
      * @access public
-     * @param  string  $name 参数名
-     * @return void
+     * @param  string $name 参数名
+     * @return mixed
      */
     public function getConfig(string $name)
     {

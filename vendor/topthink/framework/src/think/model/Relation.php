@@ -77,6 +77,16 @@ abstract class Relation
     }
 
     /**
+     * 获取当前的关联模型类的Query实例
+     * @access public
+     * @return Query
+     */
+    public function getQuery()
+    {
+        return $this->query;
+    }
+
+    /**
      * 获取当前的关联模型类的实例
      * @access public
      * @return Model
@@ -172,8 +182,9 @@ abstract class Relation
             $this->baseQuery();
 
             $result = call_user_func_array([$this->query->getModel(), $method], $args);
+            $class  = get_class($this->query);
 
-            return $result === $this->query ? $this : $result;
+            return $result instanceof $class ? $this : $result;
         }
 
         throw new Exception('method not exists:' . __CLASS__ . '->' . $method);

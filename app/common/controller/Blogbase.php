@@ -16,7 +16,7 @@ class Blogbase extends Base {
 	protected function blogHeadNav() {
 		$category = new \app\admin\model\Category();
 		$background = new \app\admin\model\Background();
-		$headernav = $category->where(['status' => 1])->order('sort desc')->column('title', 'id');
+		$headernav = $category->where(['status' => 1])->order('sort asc')->column('title', 'id');
 		$backimg = $background->find(1);
 		View::assign(['headernav' => $headernav, 'backimg' => $backimg]);
 	}
