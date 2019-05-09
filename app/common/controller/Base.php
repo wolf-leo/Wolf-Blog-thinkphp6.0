@@ -2,14 +2,9 @@
 
 namespace app\common\controller;
 
-use think\console\command\make\Controller;
-
-class Base extends Controller {
-
+class Base {
 	public function __construct() {
-		parent::__construct(\App());
 		include_once dirname(dirname(__FILE__)) . "/const.php";
 		include_once dirname(dirname(__FILE__)) . "/define.php";
 	}
-
 }
