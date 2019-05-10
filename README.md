@@ -9,7 +9,7 @@
 
 依赖Thinkphp5.2.X搭建【需要PHP版本>=7.1】，如果有使用的小伙伴可以浏览官方文档说明进行深入研究
 
-文档地址：暂无
+文档地址：https://www.kancloud.cn/manual/thinkphp6_0/1037479
 
 之后还会继续更新Thinkphp版本
 
