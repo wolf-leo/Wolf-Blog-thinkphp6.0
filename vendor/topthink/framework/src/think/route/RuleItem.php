@@ -22,6 +22,12 @@ use think\Route;
 class RuleItem extends Rule
 {
     /**
+     * 是否为MISS规则
+     * @var bool
+     */
+    protected $miss;
+
+    /**
      * 架构函数
      * @access public
      * @param  Route             $router 路由实例
@@ -40,6 +46,46 @@ class RuleItem extends Rule
         $this->method = $method;
 
         $this->setRule($rule);
+
+        $this->router->setRule($this->rule, $this);
+    }
+
+    /**
+     * 设置当前路由规则为MISS路由
+     * @access public
+     * @return void
+     */
+    public function setMiss(): void
+    {
+        $this->miss = true;
+    }
+
+    /**
+     * 判断当前路由规则是否为MISS路由
+     * @access public
+     * @return bool
+     */
+    public function isMiss(): bool
+    {
+        return $this->miss ? true : false;
+    }
+
+    /**
+     * 获取当前路由的URL后缀
+     * @access public
+     * @return string|null
+     */
+    public function getSuffix()
+    {
+        if (isset($this->option['ext'])) {
+            $suffix = $this->option['ext'];
+        } elseif ($this->parent->getOption('ext')) {
+            $suffix = $this->parent->getOption('ext');
+        } else {
+            $suffix = null;
+        }
+
+        return $suffix;
     }
 
     /**
@@ -71,24 +117,6 @@ class RuleItem extends Rule
 
         // 生成路由标识的快捷访问
         $this->setRuleName();
-
-        if ($this->router->isTest()) {
-            $this->router->setRule($this->rule, $this);
-        }
-    }
-
-    /**
-     * 检查后缀
-     * @access public
-     * @param  string     $ext
-     * @return $this
-     */
-    public function ext(string $ext = '')
-    {
-        $this->setOption('ext', $ext);
-        $this->setRuleName(true);
-
-        return $this;
     }
 
     /**
@@ -108,25 +136,13 @@ class RuleItem extends Rule
     /**
      * 设置路由标识 用于URL反解生成
      * @access protected
-     * @param  bool     $first   是否插入开头
+     * @param  bool $first 是否插入开头
      * @return void
      */
     protected function setRuleName(bool $first = false): void
     {
         if ($this->name) {
-            $vars = $this->parseVar($this->rule);
-
-            if (isset($this->option['ext'])) {
-                $suffix = $this->option['ext'];
-            } elseif ($this->parent->getOption('ext')) {
-                $suffix = $this->parent->getOption('ext');
-            } else {
-                $suffix = null;
-            }
-
-            $value = [$this->rule, $vars, $this->parent->getDomain(), $suffix, $this->method];
-
-            $this->router->setName($this->name, $value, $first);
+            $this->router->setName($this->name, $this, $first);
         }
     }
 

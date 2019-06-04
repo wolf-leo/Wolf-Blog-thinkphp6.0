@@ -26,8 +26,6 @@ class Lang
         'default_lang'    => 'zh-cn',
         // 允许的语言列表
         'allow_lang_list' => [],
-        // 自动侦测和切换
-        'auto_detect'     => false,
         // 是否使用Cookie记录
         'use_cookie'      => true,
         // 扩展语言包
@@ -71,10 +69,6 @@ class Lang
         $this->request = $request;
         $this->config  = array_merge($this->config, array_change_key_case($config));
         $this->range   = $this->config['default_lang'];
-
-        if ($this->config['auto_detect']) {
-            $this->detect();
-        }
     }
 
     public static function __make(Request $request, Config $config)
@@ -104,6 +98,16 @@ class Lang
     }
 
     /**
+     * 获取默认语言
+     * @access public
+     * @return string
+     */
+    public function defaultLangSet()
+    {
+        return $this->config['default_lang'];
+    }
+
+    /**
      * 加载语言定义(不区分大小写)
      * @access public
      * @param  string|array $file   语言文件
@@ -121,11 +125,8 @@ class Lang
 
         foreach ((array) $file as $_file) {
             if (is_file($_file)) {
-                // 记录加载信息
-                $_lang = include $_file;
-                if (is_array($_lang)) {
-                    $lang = array_change_key_case($_lang) + $lang;
-                }
+                $result = $this->parse($_file);
+                $lang   = array_change_key_case($result) + $lang;
             }
         }
 
@@ -134,6 +135,31 @@ class Lang
         }
 
         return $this->lang[$range];
+    }
+
+    /**
+     * 解析语言文件
+     * @access protected
+     * @param  string $file 语言文件名
+     * @return array
+     */
+    protected function parse(string $file): array
+    {
+        $type = pathinfo($file, PATHINFO_EXTENSION);
+
+        switch ($type) {
+            case 'php':
+                $result = include $file;
+                break;
+            case 'yml':
+            case 'yaml':
+                if (function_exists('yaml_parse_file')) {
+                    $result = yaml_parse_file($file);
+                }
+                break;
+        }
+
+        return isset($result) && is_array($result) ? $result : [];
     }
 
     /**
@@ -206,10 +232,10 @@ class Lang
 
     /**
      * 自动侦测设置获取语言选择
-     * @access protected
-     * @return void
+     * @access public
+     * @return string
      */
-    protected function detect(): void
+    public function detect(): string
     {
         // 自动侦测设置获取语言选择
         $langSet = '';
@@ -234,6 +260,8 @@ class Lang
             // 合法的语言
             $this->range = $langSet;
         }
+
+        return $this->range;
     }
 
     /**

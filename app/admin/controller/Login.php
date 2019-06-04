@@ -31,8 +31,9 @@ class Login extends Adminbase {
 
 	public function out() {
 		session('admin_uid', NULL);
-		$url = url("login/index");
-		return redirect($url);
+		$url = url("admin/login/index");
+		header('Location:' . $url);
+		exit;
 	}
 
 }

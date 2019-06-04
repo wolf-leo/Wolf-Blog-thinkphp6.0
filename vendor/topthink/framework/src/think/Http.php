@@ -120,6 +120,10 @@ class Http
      */
     public function path(string $path)
     {
+        if (substr($path, -1) != DIRECTORY_SEPARATOR) {
+            $path .= DIRECTORY_SEPARATOR;
+        }
+
         $this->path = $path;
         return $this;
     }
@@ -310,6 +314,8 @@ class Http
                     }
                 } elseif ($name && (false !== array_search($name, $map) || in_array($name, $deny))) {
                     throw new HttpException(404, 'app not exists:' . $name);
+                } elseif ($name && isset($map['*'])) {
+                    $appName = $map['*'];
                 } else {
                     $appName = $name;
                 }
@@ -378,6 +384,10 @@ class Http
             }
         }
 
+        // 加载应用默认语言包
+        $this->app->loadLangPack($this->app->lang->defaultLangSet());
+
+        // 设置应用命名空间
         $this->app->setNamespace($this->app->config->get('app.app_namespace') ?: 'app\\' . $appName);
     }
 
@@ -394,5 +404,15 @@ class Http
         $this->app->log->save();
         // 写入Session
         $this->app->session->save();
+    }
+
+    public function __debugInfo()
+    {
+        return [
+            'path'       => $this->path,
+            'multi'      => $this->multi,
+            'bindDomain' => $this->bindDomain,
+            'name'       => $this->name,
+        ];
     }
 }

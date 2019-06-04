@@ -48,7 +48,7 @@ abstract class Dispatch
     protected $dispatch;
 
     /**
-     * 调度参数
+     * 路由变量
      * @var array
      */
     protected $param;
@@ -81,6 +81,13 @@ abstract class Dispatch
     public function init(App $app)
     {
         $this->app = $app;
+
+        // 记录当前请求的路由规则
+        $this->request->setRule($this->rule);
+
+        // 记录路由变量
+        $this->request->setRoute($this->param);
+
         // 执行路由后置操作
         $this->doRouteAfter();
     }
@@ -116,7 +123,7 @@ abstract class Dispatch
             $data = ob_get_clean();
 
             $content  = false === $data ? '' : $data;
-            $status   = false === $data ? 204 : 200;
+            $status   = '' === $content && $this->request->isJson() ? 204 : 200;
             $response = Response::create($content, '', $status);
         }
 
@@ -212,8 +219,9 @@ abstract class Dispatch
         } else {
             // 调用验证器
             /** @var Validate $class */
-            $class = $this->app->parseClass('validate', $validate);
-            $v     = new $class();
+            $class = false !== strpos($validate, '\\') ? $validate : $this->app->parseClass('validate', $validate);
+
+            $v = new $class();
 
             if (!empty($scene)) {
                 $v->scene($scene);
@@ -259,6 +267,7 @@ abstract class Dispatch
             'dispatch' => $this->dispatch,
             'param'    => $this->param,
             'code'     => $this->code,
+            'rule'     => $this->rule,
         ];
     }
 }

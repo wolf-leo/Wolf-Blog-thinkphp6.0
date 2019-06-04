@@ -30,7 +30,7 @@ class Memcache extends Driver implements CacheHandlerInterface
         'timeout'    => 0, // 超时时间（单位：毫秒）
         'persistent' => true,
         'prefix'     => '',
-        'tag_prefix' => 'tag_',
+        'tag_prefix' => 'tag:',
         'serialize'  => [],
     ];
 
@@ -114,16 +114,11 @@ class Memcache extends Driver implements CacheHandlerInterface
             $expire = $this->options['expire'];
         }
 
-        if (!empty($this->tag) && !$this->has($name)) {
-            $first = true;
-        }
-
         $key    = $this->getCacheKey($name);
         $expire = $this->getExpireTime($expire);
         $value  = $this->serialize($value);
 
         if ($this->handler->set($key, $value, 0, $expire)) {
-            isset($first) && $this->setTagItem($key);
             return true;
         }
 
@@ -171,11 +166,11 @@ class Memcache extends Driver implements CacheHandlerInterface
     /**
      * 删除缓存
      * @access public
-     * @param  string       $name 缓存变量名
-     * @param  bool|false   $ttl
+     * @param  string     $name 缓存变量名
+     * @param  bool|false $ttl
      * @return bool
      */
-    public function rm(string $name, $ttl = false): bool
+    public function delete($name, $ttl = false): bool
     {
         $this->writeTimes++;
 
@@ -193,13 +188,6 @@ class Memcache extends Driver implements CacheHandlerInterface
      */
     public function clear(): bool
     {
-        if (!empty($this->tag)) {
-            foreach ($this->tag as $tag) {
-                $this->clearTag($tag);
-            }
-            return true;
-        }
-
         $this->writeTimes++;
 
         return $this->handler->flush();
@@ -208,20 +196,14 @@ class Memcache extends Driver implements CacheHandlerInterface
     /**
      * 删除缓存标签
      * @access public
-     * @param  string $tag 缓存标签名
+     * @param  array  $keys 缓存标识列表
      * @return void
      */
-    public function clearTag(string $tag): void
+    public function clearTag(array $keys): void
     {
-        // 指定标签清除
-        $keys = $this->getTagItems($tag);
-
         foreach ($keys as $key) {
             $this->handler->delete($key);
         }
-
-        $tagName = $this->getTagKey($tag);
-        $this->rm($tagName);
     }
 
 }

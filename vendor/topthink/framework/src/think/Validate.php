@@ -601,7 +601,7 @@ class Validate
 
         if (isset($this->append[$field])) {
             // 追加额外的验证规则
-            $rules = array_unique(array_merge($rules, $this->append[$field]));
+            $rules = array_unique(array_merge($rules, $this->append[$field]), SORT_REGULAR);
         }
 
         $i = 0;
@@ -671,6 +671,10 @@ class Validate
     {
         // 判断验证类型
         if (!is_numeric($key)) {
+            if (isset($this->alias[$key])) {
+                // 判断别名
+                $key = $this->alias[$key];
+            }
             return [$key, $rule, $key];
         }
 
@@ -807,12 +811,12 @@ class Validate
     /**
      * 验证字段值是否为有效格式
      * @access public
-     * @param  mixed $value  字段值
-     * @param  mixed $rule  验证规则
-     * @param  array $data  数据
+     * @param  mixed  $value  字段值
+     * @param  string $rule  验证规则
+     * @param  array  $data  数据
      * @return bool
      */
-    public function is($value, $rule, array $data = []): bool
+    public function is($value, string $rule, array $data = []): bool
     {
         switch (App::parseName($rule, 1, false)) {
             case 'require':
@@ -1184,6 +1188,25 @@ class Validate
         $val = $this->getDataValue($data, $rule);
 
         if (!empty($val)) {
+            return !empty($value) || '0' == $value;
+        }
+
+        return true;
+    }
+
+    /**
+     * 验证某个字段没有值的情况下必须
+     * @access public
+     * @param  mixed $value  字段值
+     * @param  mixed $rule  验证规则
+     * @param  array $data  数据
+     * @return bool
+     */
+    public function requireWithout($value, $rule, array $data = []): bool
+    {
+        $val = $this->getDataValue($data, $rule);
+
+        if (empty($val)) {
             return !empty($value) || '0' == $value;
         }
 

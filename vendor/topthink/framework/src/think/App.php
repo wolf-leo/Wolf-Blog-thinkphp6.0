@@ -23,7 +23,7 @@ use think\initializer\RegisterService;
  */
 class App extends Container
 {
-    const VERSION = '6.0.0RC2';
+    const VERSION = '6.0.0RC3';
 
     /**
      * 应用调试模式
@@ -112,6 +112,10 @@ class App extends Container
         $this->rootPath    = $rootPath ? rtrim($rootPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR : $this->getDefaultRootPath();
         $this->appPath     = $this->rootPath . 'app' . DIRECTORY_SEPARATOR;
         $this->runtimePath = $this->rootPath . 'runtime' . DIRECTORY_SEPARATOR;
+
+        if (is_file($this->appPath . 'provider.php')) {
+            $this->bind(include $this->appPath . 'provider.php');
+        }
 
         static::setInstance($this);
 
@@ -366,6 +370,14 @@ class App extends Container
 
         $this->debugModeInit();
 
+        // 加载框架默认语言包
+        $langSet = $this->lang->defaultLangSet();
+
+        $this->lang->load($this->thinkPath . 'lang' . DIRECTORY_SEPARATOR . $langSet . '.php');
+
+        // 加载应用默认语言包
+        $this->loadLangPack($langSet);
+
         // 监听AppInit
         $this->event->trigger('AppInit');
 
@@ -386,6 +398,29 @@ class App extends Container
     public function initialized()
     {
         return $this->initialized;
+    }
+
+    /**
+     * 加载语言包
+     * @param string $langset 语言
+     * @return void
+     */
+    public function loadLangPack($langset)
+    {
+        if (empty($langset)) {
+            return;
+        }
+
+        // 加载系统语言包
+        $files = glob($this->appPath . 'lang' . DIRECTORY_SEPARATOR . $langset . '.*');
+        $this->lang->load($files);
+
+        // 加载扩展（自定义）语言包
+        $list = $this->config->get('lang.extend_list', []);
+
+        if (isset($list[$langset])) {
+            $this->lang->load($list[$langset]);
+        }
     }
 
     /**
@@ -429,10 +464,6 @@ class App extends Container
 
         if (is_file($appPath . 'event.php')) {
             $this->loadEvent(include $appPath . 'event.php');
-        }
-
-        if (is_file($appPath . 'provider.php')) {
-            $this->bind(include $appPath . 'provider.php');
         }
 
         if (is_file($appPath . 'service.php')) {

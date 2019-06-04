@@ -16,6 +16,7 @@ use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use think\cache\CacheItem;
 use think\cache\Driver;
+use think\cache\TagSet;
 use think\exception\InvalidArgumentException;
 
 /**
@@ -85,12 +86,12 @@ class Cache implements CacheItemPoolInterface
 
     /**
      * 自动初始化缓存
-     * @access protected
+     * @access public
      * @param  array $options 配置数组
      * @param  bool  $force   强制更新
      * @return Driver
      */
-    protected function init(array $options = [], bool $force = false): Driver
+    public function init(array $options = [], bool $force = false): Driver
     {
         if (is_null($this->handler) || $force) {
             $options = !empty($options) ? $options : $this->config;
@@ -161,14 +162,13 @@ class Cache implements CacheItemPoolInterface
     /**
      * 追加缓存
      * @access public
-     * @param  string        $name 缓存变量名
-     * @param  mixed         $value  存储数据
-     * @param  int|\DateTime $expire  有效时间 0为永久
-     * @return array
+     * @param  string $name 缓存变量名
+     * @param  mixed  $value  存储数据
+     * @return void
      */
-    public function push(string $name, $value, $expire = null): array
+    public function push(string $name, $value): void
     {
-        return $this->init()->push($name, $value, $expire);
+        $this->init()->push($name, $value);
     }
 
     /**
@@ -203,7 +203,7 @@ class Cache implements CacheItemPoolInterface
      */
     public function delete(string $key): bool
     {
-        return $this->init()->rm($key);
+        return $this->init()->delete($key);
     }
 
     /**
@@ -221,9 +221,9 @@ class Cache implements CacheItemPoolInterface
      * 缓存标签
      * @access public
      * @param  string|array $name 标签名
-     * @return Driver
+     * @return TagSet
      */
-    public function tag($name)
+    public function tag($name): TagSet
     {
         return $this->init()->tag($name);
     }

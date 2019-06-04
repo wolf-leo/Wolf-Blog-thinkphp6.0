@@ -39,8 +39,8 @@ class Background extends Adminbase {
 	 * 最后记得重启apache
 	 */
 	public function edit() {
-		$id = input('id');
-		$info = $this->mod->find($id);
+		$id = input('id/d', 0);
+		$info = $this->mod->where('id', $id)->find();
 		if (IS_POST) { //数据操作
 			$data = input('post.');
 			unset($data['id']);
@@ -74,7 +74,7 @@ class Background extends Adminbase {
 				$data['c_time'] = date('Y-m-d H:i:s');
 				$x = $this->mod->insertGetId($data);
 			}
-			$x and success('修改成功') or error('修改失败');
+			$x and $this->jump(1, '修改成功') or $this->jump(0, '修改失败');
 		} else {
 			View::assign([
 				'info' => $info,

@@ -13,6 +13,8 @@
 
 namespace think;
 
+require __DIR__ . '/../vendor/autoload.php';
+
 /**
  *  INSTALL_SQL 是否自动安装数据库 
  *  TRUE=>默认安装
@@ -28,8 +30,7 @@ if (INSTALL_SQL) {
 		exit;
 	}
 }
-/** -------安装数据库 End-------------------------- */
-require __DIR__ . '/../vendor/autoload.php';
+
 
 // 执行HTTP应用并响应
 $http = (new App())->http;

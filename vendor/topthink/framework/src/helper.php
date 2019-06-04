@@ -16,13 +16,11 @@ declare (strict_types = 1);
 
 use think\App;
 use think\Container;
-use think\db\Raw;
 use think\exception\HttpException;
 use think\exception\HttpResponseException;
 use think\facade\Cache;
 use think\facade\Config;
 use think\facade\Cookie;
-use think\facade\Db;
 use think\facade\Env;
 use think\facade\Event;
 use think\facade\Lang;
@@ -30,10 +28,8 @@ use think\facade\Log;
 use think\facade\Request;
 use think\facade\Route;
 use think\facade\Session;
-use think\Model;
-use think\model\Collection as ModelCollection;
 use think\Response;
-use think\route\RuleItem;
+use think\route\Url as UrlBuild;
 use think\Validate;
 
 if (!function_exists('abort')) {
@@ -61,9 +57,9 @@ if (!function_exists('app')) {
      * @param bool   $newInstance 是否每次创建新的实例
      * @return object|App
      */
-    function app(string $name = App::class, array $args = [], bool $newInstance = false)
+    function app(string $name = '', array $args = [], bool $newInstance = false)
     {
-        return Container::pull($name, $args, $newInstance);
+        return Container::getInstance()->make($name ?: App::class, $args, $newInstance);
     }
 }
 
@@ -101,7 +97,7 @@ if (!function_exists('cache')) {
             return 0 === strpos($name, '?') ? Cache::has(substr($name, 1)) : Cache::get($name);
         } elseif (is_null($value)) {
             // 删除缓存
-            return Cache::rm($name);
+            return Cache::delete($name);
         }
 
         // 缓存数据
@@ -116,19 +112,6 @@ if (!function_exists('cache')) {
         } else {
             return Cache::tag($tag)->set($name, $value, $expire);
         }
-    }
-}
-
-if (!function_exists('call')) {
-    /**
-     * 调用反射执行callable 支持依赖注入
-     * @param  mixed $callable 支持闭包等callable写法
-     * @param  array $args     参数
-     * @return mixed
-     */
-    function call(callable $callable, array $args = [])
-    {
-        return Container::getInstance()->invoke($callable, $args);
     }
 }
 
@@ -201,7 +184,7 @@ if (!function_exists('cookie')) {
             Cookie::delete($name);
         } elseif ('' === $value) {
             // 获取
-            return 0 === strpos($name, '?') ? Request::has(substr($name, 1), 'cookie') : Request::cookie($name);
+            return 0 === strpos($name, '?') ? Cookie::has(substr($name, 1)) : Cookie::get($name);
         } else {
             // 设置
             return Cookie::set($name, $value, $option);
@@ -227,39 +210,27 @@ if (!function_exists('download')) {
 if (!function_exists('dump')) {
     /**
      * 浏览器友好的变量输出
-     * @param  mixed  $var   变量
-     * @param  bool   $echo  是否输出 默认为true 如果为false 则返回输出字符串
-     * @param  string $label 标签 默认为空
-     * @return void|string
+     * @param  mixed  $vars 要输出的变量
+     * @return void
      */
-    function dump($var, bool $echo = true, string $label = null)
+    function dump(...$vars)
     {
-        $label = (null === $label) ? '' : rtrim($label) . ':';
-        if ($var instanceof Model || $var instanceof ModelCollection) {
-            $var = $var->toArray();
-        }
-
         ob_start();
-        var_dump($var);
+        var_dump(...$vars);
 
         $output = ob_get_clean();
         $output = preg_replace('/\]\=\>\n(\s+)/m', '] => ', $output);
 
         if (PHP_SAPI == 'cli') {
-            $output = PHP_EOL . $label . $output . PHP_EOL;
+            $output = PHP_EOL . $output . PHP_EOL;
         } else {
             if (!extension_loaded('xdebug')) {
                 $output = htmlspecialchars($output, ENT_SUBSTITUTE);
             }
-            $output = '<pre>' . $label . $output . '</pre>';
+            $output = '<pre>' . $output . '</pre>';
         }
 
-        if ($echo) {
-            echo $output;
-            return;
-        }
-
-        return $output;
+        echo $output;
     }
 }
 
@@ -277,43 +248,6 @@ if (!function_exists('env')) {
     }
 }
 
-if (!function_exists('error')) {
-    /**
-     * 操作错误跳转的快捷方法
-     * @param  mixed   $msg 提示信息
-     * @param  string  $url 跳转的URL地址
-     * @param  mixed   $data 返回的数据
-     * @param  integer $wait 跳转等待时间
-     * @param  array   $header 发送的Header信息
-     * @return void
-     */
-    function error($msg = '', string $url = null, $data = '', int $wait = 3, array $header = []): void
-    {
-        if (is_null($url)) {
-            $url = request()->isAjax() ? '' : 'javascript:history.back(-1);';
-        } elseif ($url) {
-            $url = (strpos($url, '://') || 0 === strpos($url, '/')) ? $url : app('route')->buildUrl($url);
-        }
-
-        $result = [
-            'code' => 0,
-            'msg'  => $msg,
-            'data' => $data,
-            'url'  => $url,
-            'wait' => $wait,
-        ];
-
-        $type = (request()->isJson() || request()->isAjax()) ? 'json' : 'html';
-        if ('html' == strtolower($type)) {
-            $type = 'jump';
-        }
-
-        $response = Response::create($result, $type)->header($header)->options(['jump_template' => app('config')->get('app.dispatch_error_tmpl')]);
-
-        throw new HttpResponseException($response);
-    }
-}
-
 if (!function_exists('event')) {
     /**
      * 触发事件
@@ -327,31 +261,14 @@ if (!function_exists('event')) {
     }
 }
 
-if (!function_exists('exception')) {
-    /**
-     * 抛出异常处理
-     *
-     * @param string $msg       异常消息
-     * @param int    $code      异常代码 默认为0
-     * @param string $exception 异常类
-     *
-     * @throws Exception
-     */
-    function exception(string $msg, int $code = 0, string $exception = '')
-    {
-        $e = $exception ?: '\think\Exception';
-        throw new $e($msg, $code);
-    }
-}
-
 if (!function_exists('halt')) {
     /**
      * 调试变量并且中断输出
-     * @param mixed $var 调试变量或者信息
+     * @param mixed $vars 调试变量或者信息
      */
-    function halt($var)
+    function halt(...$vars)
     {
-        dump($var);
+        dump(...$vars);
 
         throw new HttpResponseException(new Response);
     }
@@ -393,14 +310,18 @@ if (!function_exists('input')) {
 
 if (!function_exists('invoke')) {
     /**
-     * 调用反射实例化对象 支持依赖注入
-     * @param  string $class 类名
-     * @param  array  $args  参数
+     * 调用反射实例化对象或者执行方法 支持依赖注入
+     * @param  mixed $call 类名或者callable
+     * @param  array $args 参数
      * @return mixed
      */
-    function invoke(string $class, array $args = [])
+    function invoke($call, array $args = [])
     {
-        return Container::getInstance()->invokeClass($class, $args);
+        if (is_callable($call)) {
+            return Container::getInstance()->invoke($call, $args);
+        }
+
+        return Container::getInstance()->invokeClass($call, $args);
     }
 }
 
@@ -471,18 +392,6 @@ if (!function_exists('parse_name')) {
     }
 }
 
-if (!function_exists('raw')) {
-    /**
-     * 生成一个数据库的Raw对象
-     * @param  string $sql SQL指令
-     * @return \think\db\Raw
-     */
-    function raw(string $sql): Raw
-    {
-        return Db::raw($sql);
-    }
-}
-
 if (!function_exists('redirect')) {
     /**
      * 获取\think\response\Redirect对象实例
@@ -528,46 +437,6 @@ if (!function_exists('response')) {
     }
 }
 
-if (!function_exists('result')) {
-    /**
-     * 返回封装后的API数据到客户端
-     * @param  mixed   $data 要返回的数据
-     * @param  integer $code 返回的code
-     * @param  mixed   $msg 提示信息
-     * @param  string  $type 返回数据格式
-     * @param  array   $header 发送的Header信息
-     * @return void
-     */
-    function result($data, int $code = 0, $msg = '', string $type = '', array $header = []): void
-    {
-        $result = [
-            'code' => $code,
-            'msg'  => $msg,
-            'time' => time(),
-            'data' => $data,
-        ];
-
-        $type     = $type ?: 'json';
-        $response = Response::create($result, $type)->header($header);
-
-        throw new HttpResponseException($response);
-    }
-}
-
-if (!function_exists('route')) {
-    /**
-     * 路由注册
-     * @param  string $rule   路由规则
-     * @param  mixed  $route  路由地址
-     * @param  string $method 请求类型
-     * @return RuleItem
-     */
-    function route(string $rule, $route, $method = '*'): RuleItem
-    {
-        return Route::rule($rule, $route, $method);
-    }
-}
-
 if (!function_exists('session')) {
     /**
      * Session管理
@@ -590,44 +459,6 @@ if (!function_exists('session')) {
             // 设置
             Session::set($name, $value);
         }
-    }
-}
-
-if (!function_exists('success')) {
-    /**
-     * 操作成功跳转的快捷方法
-     * @param  mixed     $msg 提示信息
-     * @param  string    $url 跳转的URL地址
-     * @param  mixed     $data 返回的数据
-     * @param  integer   $wait 跳转等待时间
-     * @param  array     $header 发送的Header信息
-     * @return void
-     */
-    function success($msg = '', string $url = null, $data = '', int $wait = 3, array $header = []): void
-    {
-        if (is_null($url) && isset($_SERVER["HTTP_REFERER"])) {
-            $url = $_SERVER["HTTP_REFERER"];
-        } elseif ($url) {
-            $url = (strpos($url, '://') || 0 === strpos($url, '/')) ? $url : app('route')->buildUrl($url);
-        }
-
-        $result = [
-            'code' => 1,
-            'msg'  => $msg,
-            'data' => $data,
-            'url'  => $url,
-            'wait' => $wait,
-        ];
-
-        $type = (request()->isJson() || request()->isAjax()) ? 'json' : 'html';
-        // 把跳转模板的渲染下沉，这样在 response_send 行为里通过getData()获得的数据是一致性的格式
-        if ('html' == strtolower($type)) {
-            $type = 'jump';
-        }
-
-        $response = Response::create($result, $type)->header($header)->options(['jump_template' => app('config')->get('app.dispatch_success_tmpl')]);
-
-        throw new HttpResponseException($response);
     }
 }
 
@@ -716,44 +547,45 @@ if (!function_exists('url')) {
      * @param array       $vars   变量
      * @param bool|string $suffix 生成的URL后缀
      * @param bool|string $domain 域名
-     * @return string
+     * @return UrlBuild
      */
-    function url(string $url = '', array $vars = [], $suffix = true, $domain = false): string
+    function url(string $url = '', array $vars = [], $suffix = true, $domain = false): UrlBuild
     {
-        return Route::buildUrl($url, $vars, $suffix, $domain);
+        return Route::buildUrl($url, $vars)->suffix($suffix)->domain($domain);
     }
 }
 
 if (!function_exists('validate')) {
     /**
-     * 验证数据
-     * @param  array        $data     数据
-     * @param  string|array $validate 验证器名或者验证规则数组
-     * @param  array        $message  提示信息
+     * 生成验证对象
+     * @param  string|array $validate 验证器类名或者验证规则数组
+     * @param  array        $message  错误提示信息
      * @param  bool         $batch    是否批量验证
-     * @return bool
-     * @throws ValidateException
+     * @return Validate
      */
-    function validate(array $data, $validate, array $message = [], bool $batch = false): bool
+    function validate($validate = '', array $message = [], bool $batch = false): Validate
     {
-        if (is_array($validate)) {
+        if (is_array($validate) || '' === $validate) {
             $v = new Validate();
-            $v->rule($validate);
+            if (is_array($validate)) {
+                $v->rule($validate);
+            }
         } else {
             if (strpos($validate, '.')) {
                 // 支持场景
                 list($validate, $scene) = explode('.', $validate);
             }
 
-            $class = app()->parseClass('validate', $validate);
-            $v     = new $class();
+            $class = false !== strpos($validate, '\\') ? $validate : app()->parseClass('validate', $validate);
+
+            $v = new $class();
 
             if (!empty($scene)) {
                 $v->scene($scene);
             }
         }
 
-        return $v->message($message)->batch($batch)->failException(true)->check($data);
+        return $v->message($message)->batch($batch)->failException(true);
     }
 }
 
@@ -784,19 +616,5 @@ if (!function_exists('xml')) {
     function xml($data = [], $code = 200, $header = [], $options = [])
     {
         return Response::create($data, 'xml', $code)->header($header)->options($options);
-    }
-}
-
-if (!function_exists('yaconf')) {
-    /**
-     * 获取yaconf配置
-     *
-     * @param  string $name    配置参数名
-     * @param  mixed  $default 默认值
-     * @return mixed
-     */
-    function yaconf(string $name, $default = null)
-    {
-        return Config::yaconf($name, $default);
     }
 }

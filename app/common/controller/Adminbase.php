@@ -3,6 +3,7 @@
 namespace app\common\controller;
 
 use app\common\controller\Base;
+use think\facade\Request;
 use think\facade\View;
 
 class Adminbase extends Base {
@@ -25,8 +26,8 @@ class Adminbase extends Base {
 	protected function isLogin() {
 		$admin_uid = session('admin_uid');
 		if (empty($admin_uid)) {
-			$url = url('Login/index');
-			return redirect($url);
+			$url = url('admin/Login/index');
+			header('Location:' . $url);
 			exit;
 		}
 	}

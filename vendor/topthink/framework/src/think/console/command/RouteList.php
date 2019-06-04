@@ -41,6 +41,11 @@ class RouteList extends Command
     {
         $app = $input->getArgument('app');
 
+        if (empty($app) && !is_dir($this->app->getBasePath() . 'controller')) {
+            $output->writeln('<error>Miss app name!</error>');
+            return false;
+        }
+
         if ($app) {
             $filename = $this->app->getRootPath() . 'runtime' . DIRECTORY_SEPARATOR . $app . DIRECTORY_SEPARATOR . 'route_list_' . $app . '.php';
         } else {
@@ -49,6 +54,8 @@ class RouteList extends Command
 
         if (is_file($filename)) {
             unlink($filename);
+        } elseif (!is_dir(dirname($filename))) {
+            mkdir(dirname($filename), 0755);
         }
 
         $content = $this->getRouteList($app);

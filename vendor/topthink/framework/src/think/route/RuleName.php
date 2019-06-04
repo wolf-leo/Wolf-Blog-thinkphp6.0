@@ -12,6 +12,8 @@ declare (strict_types = 1);
 
 namespace think\route;
 
+use Closure;
+
 /**
  * 路由标识管理类
  */
@@ -38,18 +40,18 @@ class RuleName
     /**
      * 注册路由标识
      * @access public
-     * @param  string       $name  路由标识
-     * @param  string|array $value 路由规则
-     * @param  bool         $first 是否置顶
+     * @param  string   $name  路由标识
+     * @param  RuleItem $ruleItem 路由规则
+     * @param  bool     $first 是否优先
      * @return void
      */
-    public function setName(string $name, $value, bool $first = false): void
+    public function setName(string $name, RuleItem $ruleItem, bool $first = false): void
     {
         $name = strtolower($name);
         if ($first && isset($this->item[$name])) {
-            array_unshift($this->item[$name], $value);
+            array_unshift($this->item[$name], $ruleItem);
         } else {
-            $this->item[$name][] = $value;
+            $this->item[$name][] = $ruleItem;
         }
     }
 
@@ -69,12 +71,18 @@ class RuleName
      * 注册路由规则
      * @access public
      * @param  string   $rule  路由规则
-     * @param  RuleItem $route 路由
+     * @param  RuleItem $ruleItem 路由
      * @return void
      */
-    public function setRule(string $rule, RuleItem $route): void
+    public function setRule(string $rule, RuleItem $ruleItem): void
     {
-        $this->rule[$rule][$route->getRoute()] = $route;
+        $route = $ruleItem->getRoute();
+
+        if ($route instanceof Closure) {
+            $this->rule[$rule][] = $ruleItem;
+        } else {
+            $this->rule[$rule][$ruleItem->getRoute()] = $ruleItem;
+        }
     }
 
     /**
@@ -128,6 +136,10 @@ class RuleName
                     $val[$param] = $item->$call();
                 }
 
+                if ($item->isMiss()) {
+                    $val['rule'] .= '<MISS>';
+                }
+
                 $list[] = $val;
             }
         }
@@ -169,7 +181,10 @@ class RuleName
                 $result = $this->item[$name];
             } else {
                 foreach ($this->item[$name] as $item) {
-                    if (($item[2] == $domain || '-' == $item[2]) && ('*' == $item[4] || '*' == $method || $method == $item[4])) {
+                    $itemDomain = $item->getDomain();
+                    $itemMethod = $item->getMethod();
+
+                    if (($itemDomain == $domain || '-' == $itemDomain) && ('*' == $itemMethod || '*' == $method || $method == $itemMethod)) {
                         $result[] = $item;
                     }
                 }

@@ -12,13 +12,14 @@ declare (strict_types = 1);
 
 namespace think\cache;
 
+use Psr\SimpleCache\CacheInterface;
 use think\Container;
 use think\exception\InvalidArgumentException;
 
 /**
  * 缓存基础类
  */
-abstract class Driver extends SimpleCache
+abstract class Driver implements CacheInterface
 {
     /**
      * 驱动句柄
@@ -48,7 +49,7 @@ abstract class Driver extends SimpleCache
      * 缓存标签
      * @var array
      */
-    protected $tag;
+    protected $tag = [];
 
     /**
      * 获取有效期
@@ -67,11 +68,11 @@ abstract class Driver extends SimpleCache
 
     /**
      * 获取实际的缓存标识
-     * @access protected
+     * @access public
      * @param  string $name 缓存名
      * @return string
      */
-    protected function getCacheKey(string $name): string
+    public function getCacheKey(string $name): string
     {
         return $this->options['prefix'] . $name;
     }
@@ -87,7 +88,7 @@ abstract class Driver extends SimpleCache
         $result = $this->get($name, false);
 
         if ($result) {
-            $this->rm($name);
+            $this->delete($name);
             return $result;
         }
     }
@@ -95,12 +96,11 @@ abstract class Driver extends SimpleCache
     /**
      * 追加（数组）缓存
      * @access public
-     * @param  string        $name 缓存变量名
-     * @param  mixed         $value  存储数据
-     * @param  int|\DateTime $expire  有效时间 0为永久
-     * @return array
+     * @param  string $name 缓存变量名
+     * @param  mixed  $value  存储数据
+     * @return void
      */
-    public function push($name, $value, $expire = null): array
+    public function push(string $name, $value): void
     {
         $item = $this->get($name, []);
 
@@ -116,8 +116,7 @@ abstract class Driver extends SimpleCache
 
         $item = array_unique($item);
 
-        $this->set($name, $item, $expire);
-        return $item;
+        $this->set($name, $item);
     }
 
     /**
@@ -154,9 +153,9 @@ abstract class Driver extends SimpleCache
             $this->set($name, $value, $expire);
 
             // 解锁
-            $this->rm($name . '_lock');
+            $this->delete($name . '_lock');
         } catch (\Exception | \throwable $e) {
-            $this->rm($name . '_lock');
+            $this->delete($name . '_lock');
             throw $e;
         }
 
@@ -171,51 +170,38 @@ abstract class Driver extends SimpleCache
      */
     public function tag($name)
     {
-        if ($name) {
-            $this->tag = (array) $name;
+        $name = (array) $name;
+        $key  = implode('-', $name);
+
+        if (!isset($this->tag[$key])) {
+            $name = array_map(function ($val) {
+                return $this->getTagKey($val);
+            }, $name);
+            $this->tag[$key] = new TagSet($name, $this);
         }
 
-        return $this;
-    }
-
-    /**
-     * 更新标签
-     * @access protected
-     * @param  string $name 缓存标识
-     * @return void
-     */
-    protected function setTagItem(string $name): void
-    {
-        if (!empty($this->tag)) {
-            $tags      = $this->tag;
-            $this->tag = null;
-
-            foreach ($tags as $tag) {
-                $key   = $this->getTagkey($tag);
-                $value = $this->push($key, $name, 0);
-            }
-        }
+        return $this->tag[$key];
     }
 
     /**
      * 获取标签包含的缓存标识
-     * @access protected
-     * @param  string $tag 缓存标签
+     * @access public
+     * @param  string $tag 标签标识
      * @return array
      */
-    protected function getTagItems(string $tag): array
+    public function getTagItems(string $tag): array
     {
-        $key = $this->getTagkey($tag);
-        return $this->get($key, []);
+        $name = $this->getTagKey($tag);
+        return $this->get($name, []);
     }
 
     /**
      * 获取实际标签名
-     * @access protected
+     * @access public
      * @param  string $tag 标签名
      * @return string
      */
-    protected function getTagKey(string $tag): string
+    public function getTagKey(string $tag): string
     {
         return $this->options['tag_prefix'] . md5($tag);
     }
@@ -275,6 +261,65 @@ abstract class Driver extends SimpleCache
     public function getWriteTimes(): int
     {
         return $this->writeTimes;
+    }
+
+    /**
+     * 读取缓存
+     * @access public
+     * @param  iterable $keys 缓存变量名
+     * @param  mixed    $default 默认值
+     * @return iterable
+     * @throws InvalidArgumentException
+     */
+    public function getMultiple($keys, $default = null): iterable
+    {
+        $result = [];
+
+        foreach ($keys as $key) {
+            $result[$key] = $this->get($key, $default);
+        }
+
+        return $result;
+    }
+
+    /**
+     * 写入缓存
+     * @access public
+     * @param  iterable               $values 缓存数据
+     * @param  null|int|\DateInterval $ttl    有效时间 0为永久
+     * @return bool
+     */
+    public function setMultiple($values, $ttl = null): bool
+    {
+        foreach ($values as $key => $val) {
+            $result = $this->set($key, $val, $ttl);
+
+            if (false === $result) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * 删除缓存
+     * @access public
+     * @param iterable $keys 缓存变量名
+     * @return bool
+     * @throws InvalidArgumentException
+     */
+    public function deleteMultiple($keys): bool
+    {
+        foreach ($keys as $key) {
+            $result = $this->delete($key);
+
+            if (false === $result) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function __call($method, $args)
