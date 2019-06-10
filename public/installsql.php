@@ -51,14 +51,14 @@ if ($version_exp[0] < 4) {
 }
 
 if (!mysqli_query($conn, "CREATE DATABASE IF NOT EXISTS `" . $dbName . "` DEFAULT CHARSET {$dbCharset} ;")) {
-	exit("数据库 ' . $dbName . ' 不存在，也没权限创建新的数据库！");
+	exit("数据库{$dbName}不存在，也没权限创建新的数据库！");
 }
 
 //读取数据文件
 $sql1 = file_get_contents($sql_base);
 $sql2 = file_get_contents($sql_data);
 if (!mysqli_select_db($conn, $dbName)) {
-	exit("数据库 ' . $dbName . ' 不存在！");
+	exit("数据库{$dbName}不存在！");
 }
 $tables = mysqli_fetch_row(mysqli_query($conn, "SHOW TABLES"));
 if (is_array($tables)) {
