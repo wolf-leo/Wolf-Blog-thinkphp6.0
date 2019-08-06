@@ -51,7 +51,7 @@ if ($version_exp[0] < 4) {
 }
 $engine = mysqli_query($conn, 'SHOW ENGINE innodb status;');
 if ($engine == false) {
-	exit("当前 MySql {$version} 版本不支持innodb引擎，请升级到 MySql 5.6 版本或者以上");
+	// exit("当前 MySql {$version} 版本不支持innodb引擎，请升级到 MySql 5.6 版本或者以上");
 }
 if (!mysqli_query($conn, "CREATE DATABASE IF NOT EXISTS `" . $dbName . "` DEFAULT CHARSET {$dbCharset} ;")) {
 	exit("数据库{$dbName}不存在，也没权限创建新的数据库！");
