@@ -1,0 +1,559 @@
+@media only screen and (min-width:500px) and (max-width:700px) {
+    body {
+        background: #fff;
+    }
+    /*header-web*/
+    #header-web {
+        width: 100%;
+        background: #fff;
+    }
+    .header-main {
+        width: 100%;
+    }
+    .logo {
+        width: 100%;
+        text-align: center;
+        padding: 5px 0px;
+    }
+    .logo h1 img {
+        width: 170px;
+        height: auto; 
+        border-radius: 50%;
+    }
+    .logo h3 {
+        display: none;
+    }
+    /*header-nav*/
+    .header-nav {
+        height: 40px;
+        width: 100%;
+        background: #e7e7e7;
+        overflow: hidden;
+    }
+    .header-nav .nav-logo {
+        display: none;
+    }
+    .header-nav .nav-logo img {
+        border-radius: 50%;
+        position: absolute;
+    }
+    .menu {
+        height: 40px;
+        width: 100%
+    }
+    .menu li {
+        float: left;
+        width: 20%;
+    }
+    .menu li a {
+        display: block;
+        height: 40px;
+        width: 100%;
+        line-height: 42px;
+        text-align: center;
+        font-size: 18px;
+        color: #585858;
+        padding: 0px 1px;
+    }
+    .menu li a:hover {
+        background: #d6623d;
+        color: #fff;
+    }
+    .menu li .sub-menu {
+        display: none;
+    }
+    .header-nav .menu li .current {
+        color: #FFFFFF;
+        background: #4398ed;
+    }
+    .wp{display:none;}
+    /*header-web-header-main-weibo */
+    .weibo {
+        display: none;
+    }
+    /*main*/
+    #main {
+        width: 100%;
+        height: auto;
+        background: #FFF;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+    /*mbx*/	
+    #mbx {
+        display: none;
+    }
+    #soutab {
+        display: none;
+    }
+    /*main-container*/
+    #container {
+        width: 100%;
+        margin: 0 auto;
+    }
+    /*main-container-list*/
+    .list {
+        width: 94%;
+        border-bottom: 1px solid #ececec;
+        padding: 20px 0px;
+        margin: 0 auto;
+    }
+    .archive-list {
+        width: 94%;
+        border-bottom: 1px solid #ececec;
+        padding: 20px 0px;
+        margin: 0 auto;
+    }
+    .titleimg {
+        width: 22%;
+        display: block;
+        float: left;
+        margin-right: 3%;
+    }
+    .titleimg img {
+        width: 100%;        
+        max-height: 165px;
+    }
+    .mecc {
+        width: 75%;
+        float: left;
+    }
+    .mecctitle {
+        display: flex;
+        height: 20px;
+        overflow: hidden;
+        line-height: 20px;
+    }
+    .mecctitle .toparticle{
+        background: url(/src/blog/image/zhiding.svg) no-repeat  center;
+        background-size: 2rem 2rem;
+        padding-left: 2rem;
+        margin-right: 2px;
+    }
+    .mecctitle a {
+        font-size: 18px;
+        font-weight: normal;
+        color: #150707;
+    }
+    .mecctitle a:hover {
+        color: #d6623d;
+    }
+    .meccaddress {
+        color: #a2a2a2;
+        margin-top: 9px;
+        font-style: normal;
+        display: inline-block;
+    }
+    .meccaddress a {
+        color: #a2a2a2;
+    }
+    .meccaddress a:hover {
+        color: #d6623d;
+    }
+    .meccaddress img {
+        width: 20px;
+        height: auto;
+    }
+    .mecc p {
+        margin-top: 5px;
+        line-height: 30px;
+    }
+    .mecc .readmore{
+        margin-top: 10px;
+    }
+    .mecc .readmore a{
+        color: #999;
+    }
+    .up {
+        display: none;
+    }
+    /*main-container-pagenavi*/
+    .pagenavi {
+        margin-top: 20px;
+        text-align: center;
+        height: 30px;
+    }
+    .page-numbers {
+        border-bottom: 5px solid #ececec;
+        padding: 5px 8px 4px;
+        margin: 0 5px;
+        transition: All 1s ease-in-out;
+        -webkit-transition: All 0.3s ease-in-out;
+        -moz-transition: All 0.3s ease-in-out;
+        -o-transition: All 0.3s ease-in-out;
+    }
+    .page-numbers:hover, .pagenavi .current {
+        color: #d6623d;
+        border-bottom: 5px solid #d6623d;
+    }
+    .navigation {
+        display: none;
+    }
+    /*container-content*/
+    .content {
+        width: 100%;
+        margin: 0 auto;
+    }
+    /*container-content-contenttitle*/
+    .contenttitle {
+        width: 100%;
+        padding: 20px 0px;
+        margin: 0 auto;
+        background: #f8f8f8;
+    }
+    .count {
+        display: none;
+    }
+    .mscc {
+        width: 92%;
+        margin: 0 auto;
+    }
+    .mscctitle {
+        line-height: 28px;
+    }
+    .mscctitle a {
+        font-size: 20px;
+        line-height: 35px;
+        font-weight: normal;
+        color: #150707;
+    }
+    .msccaddress {
+        color: #a2a2a2;
+        margin-top: 9px;
+        font-style: normal;
+    }
+    .bshare-custom {
+        display: none;
+    }
+    .msccaddress a {
+        color: #a2a2a2;
+    }
+    .msccaddress img {
+        width: 20px;
+        height: auto;
+    }
+    .msccaddress em {
+        display: none;
+    }
+    /*container-content-content.text*/		
+    .content-text {
+        overflow: hidden;
+        width: 92%;
+        margin: 0 auto;
+        margin-top:5px;
+    }
+    .content-text p {
+        clear: both;
+        width: auto;
+        padding: 7px 0;
+        font-size: 16px;
+        line-height: 30px;
+        word-wrap: break-word;
+    }
+    .content-text p a{
+        font-size: 16px;
+    }
+    .content-text p img {
+        max-width: 100%;
+        background-size: 100% auto;
+        display:block;
+    }
+    .content-text p a img {
+        max-width: 100%;
+        background-size: 100% auto;
+        display:block;
+    }/*飘出p这个层，就相当于没有p的text-indent*/
+    .content-text h1 {
+        line-height: 30px;
+        background: #f7f7f7;
+        margin: 8px 0px 8px 0px;
+        border-left: 2px solid #d6623d;
+        padding: 8px 30px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #d6623d;
+        display: block;
+    }
+    .content-text h2 {
+        line-height: 30px;
+        background: #f7f7f7;
+        margin: 8px 0px 8px 0px;
+        border-left: 2px solid #9faa65;
+        padding: 8px 30px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #347e02;
+        display: inline-block;
+    }
+    .content-text h3 {
+        line-height: 30px;
+        background: #f7f7f7;
+        margin: 8px 0px 8px 0px;
+        border-left: 2px solid #3386a4;
+        padding: 8px 30px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #3386a4;
+        display: inline-block;
+    }
+    .content-text blockquote {
+        background: #f1f1f1;
+        padding-left: 1em;
+        margin: 1em 0;
+        color: #6b7a8c;
+        border-left: 4px solid #cfd8e6;
+        text-align: left;
+    }
+    .content-text blockquote p{
+        text-indent: 0;
+    }
+    .content-text pre {
+        background: #3c7934;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        padding: 10px 10px;
+        max-width: 800px;
+        overflow: visible;
+        color: #FFFFFF;
+        margin-left: 5px;
+        word-wrap: break-word;
+        /*white-space: pre-wrap;*/
+        overflow-x: auto;
+    }
+    /*container-content-pagetitle*/
+    .pagetitle {
+        height: 50px;
+        line-height: 55px;
+        background: #f7f7f7;
+        padding: 0px 40px;
+        font-size: 20px;
+        font-weight: normal;
+        color: #150707;
+        background: #f8f8f8;
+    }
+    /*container-content-article-tag*/	
+    .article-tag {
+        display: none;
+    }
+    /*container-nav-single*/
+    .nav-single {
+        display: none;
+    }
+    /*container-xianguan*/
+    .xianguan {
+        display: none
+    }
+    /*comments-coment*/
+    .comment {
+        width: 100%;
+        border-radius: 8px;
+        padding: 25px 0px;
+        margin-top: 15px;
+        overflow: hidden;
+    }
+    .comment .title {
+        width: 100%;
+        font-size: 16px;
+        color: #949494;
+        text-indent: 40px;
+    }
+    #comment {
+        width: 90%;
+        margin: 0 auto;
+        margin-top: -25px;
+        margin-bottom: 25px;
+    }
+    #comment li {
+        width: 100%;
+        padding: 25px 0px;
+        border-bottom: 1px solid #ececec;
+        overflow: hidden;
+    }
+    #comment li span {
+        display: block;
+        float: left;
+        margin-right: 20px;
+    }
+    #comment li span img {
+        height: 45px;
+        width: 45px;
+        border-radius: 50px;
+        transition: all 0.4s linear;
+    }
+    #comment li span img:hover {
+        transform: rotate(360deg);
+        -moz-transform: rotate(360deg);
+        -webkit-transform: rotate(360deg);
+        -o-transform: rotate(360deg);
+    }
+    #comment li .mhcc {
+        width: 75%;
+        float: left;
+    }
+    #comment li .mhcc address {
+        height: 18px;
+        line-height: 16px;
+        color: #a2a2a2;
+        font-style: normal;
+    }
+    #comment li .mhcc address a {
+    }
+    #comment li .mhcc p {
+        clear: both;
+        width: auto;
+        padding: 5px 0;
+        line-height: 30px;
+        font-size: 16px;
+    }
+    /*comments-coment-commentform*/
+    #respond {
+        margin-top: 25px;
+        width: 100%
+    }
+    #respond p {
+        margin-left: 5%;
+    }
+    #respond p a {
+        color: #f34c02;
+    }
+    #commentform {
+        margin-top: 25px;
+        width: 100%;
+    }
+    #commentform .inputt {
+        width: 42%;
+        padding: 10px 0px;
+        text-indent: 15px;
+        border: 1px solid #ececec;
+        border-radius: 3px;
+        font-size: 16px;
+        color: #949494;
+        display: inline-block;
+        margin-left: 5.0%;
+        font-family: "Microsoft Yahei", "冬青黑体简体中文 w3";
+    }
+
+    #commentform textarea {
+        width: 85%;
+        padding: 14px;
+        margin: 0 auto;
+        margin-top: 25px;
+        border: 1px solid #ececec;
+        border-radius: 3px;
+        font-size: 16px;
+        color: #949494;
+        display: block;
+        font-family: "Microsoft Yahei", "冬青黑体简体中文 w3";
+    }
+    .cancel-comment-reply {
+        display: none;
+    }
+    #commentform #submit {
+        float: right;
+        width: 25%;
+        height: 40px;
+        line-height: 15px;
+        border-radius: 3px;
+        border: none;
+        font-weight: bold;
+        color: #fff;
+        text-align: center;
+        background: #e54e1e;
+        cursor: pointer;
+        margin-top: 25px;
+        margin-right: 5%;
+        font-family: "Microsoft Yahei", "冬青黑体简体中文 w3";
+    }
+    /*sitebar*/
+    #sitebar {
+        display: none;
+    }
+    /*dibu*/
+    #dibu {
+        display: none;
+    }
+    /*container-content-juanz*/
+    .juanz {
+        width: 2px;
+        height: 3550px;
+        background: #b5b5b5;
+        margin: 0 auto;
+        margin-top: -20px;
+    }
+    .juanz li {
+        width: 300px;
+        margin-top: 50px;
+        font-size: 16px;
+        color: #6f8303;
+        height: 34px;
+        line-height: 34px;
+    }
+    .juanz li b {
+        background: #419702;
+        color: #fff;
+        font-size: 14px;
+        width: 34px;
+        height: 34px;
+        border-radius: 50px;
+        display: inline-block;
+        text-align: center;
+    }
+    .juanz .left {
+        text-align: right;
+        margin-left: -283px;
+    }
+    .juanz .right {
+        margin-left: -17px;
+    }
+    /*hot article*/
+    .hot-list{
+        width: 94%;
+        border-bottom: 1px solid #ececec;
+        padding: 20px 0px;
+        margin: 0 auto;
+        overflow: hidden;}
+    .content .hot-list:last-child  {width: 94%;
+                                    border-bottom: none;
+                                    padding: 20px 0px;
+                                    margin: 0 auto;
+                                    overflow: hidden;}	
+    .hottitle {
+        display:none;
+    }
+    .hotmecc {
+        width:100%;
+        float: left;
+    }
+    .hotmecc p {
+        width:100%;
+        line-height: 30px;
+        margin-top: 6px;
+    }
+    .mulu{display:block;background:#d6623d;padding:0px 2px;float:left;border-radius:2px;margin-right:10px;height:20px;line-height:21px;}
+    .mulu a{color:#fff;font-size:13px;}
+    /*404*/
+    .fourjpg {
+        width: 100%;
+        background-size: 100% auto;
+        margin-top: 40px;
+        height: 246px;
+    }
+    .wrong {
+        display: none;
+    }/*如果不漂起来,会把图片顶下去的*/
+    .four-buttom {
+        display: block;
+        height: 30px;
+        line-height: 30px;
+        font-size: 16px;
+        color: #fff;
+        margin-top: 246px;
+        padding: 0px 10px;
+        float: right;
+        margin-right: 100px;
+        background: #d6623d;
+    }
+    .four-buttom:hover {
+        color: #fff;
+    }
+}
