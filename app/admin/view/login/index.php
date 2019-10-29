@@ -4,8 +4,8 @@
 		<meta charset="UTF-8">
 		<title>后台登录</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-		<meta name="keywords" content="ok-admin v2.0,ok-admin网站后台模版,后台模版下载,后台管理系统模版,HTML后台模版下载">
-		<meta name="description" content="ok-admin v2.0，顾名思义，很赞的后台模版，它是一款基于Layui框架的轻量级扁平化且完全免费开源的网站后台管理系统模板，适合中小型CMS后台系统。">
+		<meta name="keywords" content="">
+		<meta name="description" content="">
 		<link rel="shortcut icon" href="/src/admin/images/favicon.ico" type="image/x-icon"/>
 		<link rel="stylesheet" href="/src/admin/css/oksub.css"/>
 		<script src="/src/admin/js/jquery.min.js"></script>
