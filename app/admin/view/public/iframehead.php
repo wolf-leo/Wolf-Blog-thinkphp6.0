@@ -7,7 +7,7 @@
 		<meta name="keywords" content="">
 		<meta name="description" content="">
 		<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon"/>
-		<link rel="stylesheet" href="/src/admin/css/okadmin.css?v={:time()}">
+		<link rel="stylesheet" href="/src/admin/css/okadmin.css?v={:date('ymd')}">
 		<script src="/src/admin/js/jquery.min.js"></script>
 	</head>
 	<body class="layui-layout-body">

@@ -8,6 +8,6 @@
 <div class="yy"></div>
 <!--js逻辑-->
 <script src="/src/admin/lib/layui/layui.js"></script>
-<script src="/src/admin/js/okadmin.js?v={:time()}"></script>
+<script src="/src/admin/js/okadmin.js?v={:date('ymd')}"></script>
 </body>
 </html>
