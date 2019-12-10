@@ -12,6 +12,6 @@
 		</p>
 	</div>
 	<div class="mydiv" id="mydiv">
-		<a target="_blank" href="https://www.aliyun.com/1111/2019/group-buying-share?ptCode=6B96E535DC564DFF8F0069A7C1D67247647C88CF896EF535&userCode=sj5wffgk&share_source=copy_link"><img src="/static/ad/300-250.jpg" ></a>
+		<a target="_blank" href="https://www.wolfcode.com.cn/go/aliyun/"><img src="/static/ad/300-250.jpg" ></a>
 	</div>
 </aside>
