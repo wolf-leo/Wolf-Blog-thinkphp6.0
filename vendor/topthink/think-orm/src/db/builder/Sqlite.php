@@ -68,13 +68,13 @@ class Sqlite extends Builder
         if (is_int($key)) {
             return (string) $key;
         } elseif ($key instanceof Raw) {
-            return $key->getValue();
+            return $this->parseRaw($query, $key);
         }
 
         $key = trim($key);
 
         if (strpos($key, '.')) {
-            list($table, $key) = explode('.', $key, 2);
+            [$table, $key] = explode('.', $key, 2);
 
             $alias = $query->getOptions('alias');
 

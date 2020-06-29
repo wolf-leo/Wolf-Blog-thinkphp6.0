@@ -14,6 +14,7 @@ namespace think\app;
 
 use Closure;
 use think\App;
+use think\exception\HttpException;
 use think\Request;
 use think\Response;
 
@@ -33,6 +34,12 @@ class MultiApp
     protected $name;
 
     /**
+     * 应用名称
+     * @var string
+     */
+    protected $appName;
+
+    /**
      * 应用路径
      * @var string
      */
@@ -46,7 +53,7 @@ class MultiApp
     }
 
     /**
-     * Session初始化
+     * 多应用解析
      * @access public
      * @param Request $request
      * @param Closure $next
@@ -54,7 +61,6 @@ class MultiApp
      */
     public function handle($request, Closure $next)
     {
-        // 多应用解析
         if (!$this->parseMultiApp()) {
             return $next($request);
         }
@@ -73,11 +79,7 @@ class MultiApp
      */
     protected function getRoutePath(): string
     {
-        if (is_dir($this->app->getAppPath() . 'route')) {
-            return $this->app->getAppPath() . 'route' . DIRECTORY_SEPARATOR;
-        }
-
-        return $this->app->getRootPath() . 'route' . DIRECTORY_SEPARATOR . $this->name . DIRECTORY_SEPARATOR;
+        return $this->app->getAppPath() . 'route' . DIRECTORY_SEPARATOR;
     }
 
     /**
@@ -89,14 +91,14 @@ class MultiApp
         $scriptName = $this->getScriptName();
         $defaultApp = $this->app->config->get('app.default_app') ?: 'index';
 
-        if ($this->name || 'index' != $scriptName) {
+        if ($this->name || ($scriptName && !in_array($scriptName, ['index', 'router', 'think']))) {
             $appName = $this->name ?: $scriptName;
             $this->app->http->setBind();
         } else {
             // 自动多应用识别
             $this->app->http->setBind(false);
-            $appName    = null;
-            $this->name = '';
+            $appName       = null;
+            $this->appName = '';
 
             $bind = $this->app->config->get('app.domain_bind', []);
 
@@ -122,6 +124,10 @@ class MultiApp
                 $map  = $this->app->config->get('app.app_map', []);
                 $deny = $this->app->config->get('app.deny_app_list', []);
                 $name = current(explode('/', $path));
+
+                if (strpos($name, '.')) {
+                    $name = strstr($name, '.', true);
+                }
 
                 if (isset($map[$name])) {
                     if ($map[$name] instanceof Closure) {
@@ -183,7 +189,7 @@ class MultiApp
      */
     protected function setApp(string $appName): void
     {
-        $this->name = $appName;
+        $this->appName = $appName;
         $this->app->http->name($appName);
 
         $appPath = $this->path ?: $this->app->getBasePath() . $appName . DIRECTORY_SEPARATOR;
@@ -193,7 +199,7 @@ class MultiApp
         $this->app->setNamespace($this->app->config->get('app.app_namespace') ?: 'app\\' . $appName);
 
         if (is_dir($appPath)) {
-            $this->app->setRuntimePath($this->app->getRootPath() . 'runtime' . DIRECTORY_SEPARATOR . $appName . DIRECTORY_SEPARATOR);
+            $this->app->setRuntimePath($this->app->getRuntimePath() . $appName . DIRECTORY_SEPARATOR);
             $this->app->http->setRoutePath($this->getRoutePath());
 
             //加载应用
@@ -212,15 +218,9 @@ class MultiApp
             include_once $appPath . 'common.php';
         }
 
-        $configPath = $this->app->getConfigPath();
-
         $files = [];
 
-        if (is_dir($appPath . 'config')) {
-            $files = array_merge($files, glob($appPath . 'config' . DIRECTORY_SEPARATOR . '*' . $this->app->getConfigExt()));
-        } elseif (is_dir($configPath . $appName)) {
-            $files = array_merge($files, glob($configPath . $appName . DIRECTORY_SEPARATOR . '*' . $this->app->getConfigExt()));
-        }
+        $files = array_merge($files, glob($appPath . 'config' . DIRECTORY_SEPARATOR . '*' . $this->app->getConfigExt()));
 
         foreach ($files as $file) {
             $this->app->config->load($file, pathinfo($file, PATHINFO_FILENAME));

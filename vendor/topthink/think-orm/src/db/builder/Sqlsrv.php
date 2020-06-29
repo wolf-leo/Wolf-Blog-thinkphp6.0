@@ -73,12 +73,12 @@ class Sqlsrv extends Builder
 
         foreach ($order as $key => $val) {
             if ($val instanceof Raw) {
-                $array[] = $val->getValue();
+                $array[] = $this->parseRaw($query, $val);
             } elseif ('[rand]' == $val) {
                 $array[] = $this->parseRand($query);
             } else {
                 if (is_numeric($key)) {
-                    list($key, $sort) = explode(' ', strpos($val, ' ') ? $val : $val . ' ');
+                    [$key, $sort] = explode(' ', strpos($val, ' ') ? $val : $val . ' ');
                 } else {
                     $sort = $val;
                 }
@@ -115,13 +115,13 @@ class Sqlsrv extends Builder
         if (is_int($key)) {
             return (string) $key;
         } elseif ($key instanceof Raw) {
-            return $key->getValue();
+            return $this->parseRaw($query, $key);
         }
 
         $key = trim($key);
 
         if (strpos($key, '.') && !preg_match('/[,\'\"\(\)\[\s]/', $key)) {
-            list($table, $key) = explode('.', $key, 2);
+            [$table, $key] = explode('.', $key, 2);
 
             $alias = $query->getOptions('alias');
 

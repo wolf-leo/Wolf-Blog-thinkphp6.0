@@ -33,11 +33,7 @@ class Query extends BaseQuery
      */
     public function orderRaw(string $field, array $bind = [])
     {
-        if (!empty($bind)) {
-            $this->bindParams($field, $bind);
-        }
-
-        $this->options['order'][] = new Raw($field);
+        $this->options['order'][] = new Raw($field, $bind);
 
         return $this;
     }
@@ -109,34 +105,6 @@ class Query extends BaseQuery
         $this->options['table'] = new Raw($table);
 
         return $this;
-    }
-
-    /**
-     * 执行查询 返回数据集
-     * @access public
-     * @param string $sql  sql指令
-     * @param array  $bind 参数绑定
-     * @return array
-     * @throws BindParamException
-     * @throws PDOException
-     */
-    public function query(string $sql, array $bind = []): array
-    {
-        return $this->connection->query($this, $sql, $bind);
-    }
-
-    /**
-     * 执行语句
-     * @access public
-     * @param string $sql  sql指令
-     * @param array  $bind 参数绑定
-     * @return int
-     * @throws BindParamException
-     * @throws PDOException
-     */
-    public function execute(string $sql, array $bind = []): int
-    {
-        return $this->connection->execute($this, $sql, $bind, true);
     }
 
     /**
@@ -225,18 +193,6 @@ class Query extends BaseQuery
     public function distinct(bool $distinct = true)
     {
         $this->options['distinct'] = $distinct;
-        return $this;
-    }
-
-    /**
-     * 设置自增序列名
-     * @access public
-     * @param string $sequence 自增序列名
-     * @return $this
-     */
-    public function sequence(string $sequence = null)
-    {
-        $this->options['sequence'] = $sequence;
         return $this;
     }
 
@@ -353,12 +309,14 @@ class Query extends BaseQuery
     /**
      * 获取当前数据表的自增主键
      * @access public
-     * @return string
+     * @return string|null
      */
     public function getAutoInc()
     {
-        if (empty($this->autoinc)) {
-            $this->autoinc = $this->connection->getAutoInc($this->getTable());
+        $tableName = $this->getTable();
+
+        if (empty($this->autoinc) && $tableName) {
+            $this->autoinc = $this->connection->getAutoInc($tableName);
         }
 
         return $this->autoinc;
@@ -460,7 +418,7 @@ class Query extends BaseQuery
             $query = $this->options($options)->limit($count);
 
             if (strpos($column, '.')) {
-                list($alias, $key) = explode('.', $column);
+                [$alias, $key] = explode('.', $column);
             } else {
                 $key = $column;
             }

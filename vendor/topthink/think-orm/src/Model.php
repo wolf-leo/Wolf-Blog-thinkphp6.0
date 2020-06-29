@@ -86,6 +86,12 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
     protected $name;
 
     /**
+     * 主键值
+     * @var string
+     */
+    protected $key;
+
+    /**
      * 数据表名称
      * @var string
      */
@@ -134,6 +140,12 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
     protected static $maker = [];
 
     /**
+     * 方法注入
+     * @var Closure[][]
+     */
+    protected static $macro = [];
+
+    /**
      * 设置服务注入
      * @access public
      * @param Closure $maker
@@ -142,6 +154,21 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
     public static function maker(Closure $maker)
     {
         static::$maker[] = $maker;
+    }
+
+    /**
+     * 设置方法注入
+     * @access public
+     * @param string $method
+     * @param Closure $closure
+     * @return void
+     */
+    public static function macro(string $method, Closure $closure)
+    {
+        if (!isset(static::$macro[static::class])) {
+            static::$macro[static::class] = [];
+        }
+        static::$macro[static::class][$method] = $closure;
     }
 
     /**
@@ -239,11 +266,22 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
      */
     public function newInstance(array $data = [], $where = null): Model
     {
-        if (empty($data)) {
-            return new static();
+        $model = new static($data);
+
+        if ($this->connection) {
+            $model->setConnection($this->connection);
         }
 
-        $model = (new static($data))->exists(true);
+        if ($this->suffix) {
+            $model->setSuffix($this->suffix);
+        }
+
+        if (empty($data)) {
+            return $model;
+        }
+
+        $model->exists(true);
+
         $model->setUpdateWhere($where);
 
         $model->trigger('AfterRead');
@@ -260,6 +298,28 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
     protected function setUpdateWhere($where): void
     {
         $this->updateWhere = $where;
+    }
+
+    /**
+     * 设置当前模型的数据库连接
+     * @access public
+     * @param string $connection 数据表连接标识
+     * @return $this
+     */
+    public function setConnection(string $connection)
+    {
+        $this->connection = $connection;
+        return $this;
+    }
+
+    /**
+     * 获取当前模型的数据库连接标识
+     * @access public
+     * @return string
+     */
+    public function getConnection(): string
+    {
+        return $this->connection ?: '';
     }
 
     /**
@@ -572,12 +632,15 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
 
         // 模型更新
         $db = $this->db();
-        $db->startTrans();
 
-        try {
-            $where  = $this->getWhere();
+        $db->transaction(function () use ($data, $allowFields, $db) {
+            $this->key = null;
+            $where     = $this->getWhere();
+
             $result = $db->where($where)
                 ->strict(false)
+                ->cache(true)
+                ->setOption('key', $this->key)
                 ->field($allowFields)
                 ->update($data);
 
@@ -587,17 +650,12 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
             if (!empty($this->relationWrite)) {
                 $this->autoRelationUpdate();
             }
+        });
 
-            $db->commit();
+        // 更新回调
+        $this->trigger('AfterUpdate');
 
-            // 更新回调
-            $this->trigger('AfterUpdate');
-
-            return true;
-        } catch (\Exception $e) {
-            $db->rollback();
-            throw $e;
-        }
+        return true;
     }
 
     /**
@@ -629,20 +687,20 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
         $allowFields = $this->checkAllowFields();
 
         $db = $this->db();
-        $db->startTrans();
 
-        try {
+        $db->transaction(function () use ($sequence, $allowFields, $db) {
             $result = $db->strict(false)
                 ->field($allowFields)
                 ->replace($this->replace)
-                ->insert($this->data, false, $sequence);
+                ->sequence($sequence)
+                ->insert($this->data, true);
 
             // 获取自动增长主键
-            if ($result && $insertId = $db->getLastInsID($sequence)) {
+            if ($result) {
                 $pk = $this->getPk();
 
                 if (is_string($pk) && (!isset($this->data[$pk]) || '' == $this->data[$pk])) {
-                    $this->data[$pk] = $insertId;
+                    $this->data[$pk] = $result;
                 }
             }
 
@@ -650,20 +708,15 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
             if (!empty($this->relationWrite)) {
                 $this->autoRelationInsert();
             }
+        });
 
-            $db->commit();
+        // 标记数据已经存在
+        $this->exists = true;
 
-            // 标记数据已经存在
-            $this->exists = true;
+        // 新增回调
+        $this->trigger('AfterInsert');
 
-            // 新增回调
-            $this->trigger('AfterInsert');
-
-            return true;
-        } catch (\Exception $e) {
-            $db->rollback();
-            throw $e;
-        }
+        return true;
     }
 
     /**
@@ -675,12 +728,13 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
     {
         $pk = $this->getPk();
 
-        if (is_string($pk) && isset($this->data[$pk])) {
-            $where = [[$pk, '=', $this->data[$pk]]];
+        if (is_string($pk) && isset($this->origin[$pk])) {
+            $where     = [[$pk, '=', $this->origin[$pk]]];
+            $this->key = $this->origin[$pk];
         } elseif (is_array($pk)) {
             foreach ($pk as $field) {
-                if (isset($this->data[$field])) {
-                    $where[] = [$field, '=', $this->data[$field]];
+                if (isset($this->origin[$field])) {
+                    $where[] = [$field, '=', $this->origin[$field]];
                 }
             }
         }
@@ -703,9 +757,9 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
     public function saveAll(iterable $dataSet, bool $replace = true): Collection
     {
         $db = $this->db();
-        $db->startTrans();
 
-        try {
+        $result = $db->transaction(function () use ($replace, $dataSet) {
+
             $pk = $this->getPk();
 
             if (is_string($pk) && $replace) {
@@ -714,21 +768,20 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
 
             $result = [];
 
+            $suffix = $this->getSuffix();
+
             foreach ($dataSet as $key => $data) {
                 if ($this->exists || (!empty($auto) && isset($data[$pk]))) {
-                    $result[$key] = self::update($data);
+                    $result[$key] = static::update($data, [], [], $suffix);
                 } else {
-                    $result[$key] = self::create($data, $this->field, $this->replace);
+                    $result[$key] = static::create($data, $this->field, $this->replace, $suffix);
                 }
             }
 
-            $db->commit();
+            return $result;
+        });
 
-            return $this->toCollection($result);
-        } catch (\Exception $e) {
-            $db->rollback();
-            throw $e;
-        }
+        return $this->toCollection($result);
     }
 
     /**
@@ -746,9 +799,8 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
         $where = $this->getWhere();
 
         $db = $this->db();
-        $db->startTrans();
 
-        try {
+        $db->transaction(function () use ($where, $db) {
             // 删除当前模型数据
             $db->where($where)->delete();
 
@@ -756,35 +808,35 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
             if (!empty($this->relationWrite)) {
                 $this->autoRelationDelete();
             }
+        });
 
-            $db->commit();
+        $this->trigger('AfterDelete');
 
-            $this->trigger('AfterDelete');
+        $this->exists   = false;
+        $this->lazySave = false;
 
-            $this->exists   = false;
-            $this->lazySave = false;
-
-            return true;
-        } catch (\Exception $e) {
-            $db->rollback();
-            throw $e;
-        }
+        return true;
     }
 
     /**
      * 写入数据
      * @access public
-     * @param array $data       数据数组
-     * @param array $allowField 允许字段
-     * @param bool  $replace    使用Replace
+     * @param array  $data       数据数组
+     * @param array  $allowField 允许字段
+     * @param bool   $replace    使用Replace
+     * @param string $suffix     数据表后缀
      * @return static
      */
-    public static function create(array $data, array $allowField = [], bool $replace = false): Model
+    public static function create(array $data, array $allowField = [], bool $replace = false, string $suffix = ''): Model
     {
         $model = new static();
 
         if (!empty($allowField)) {
             $model->allowField($allowField);
+        }
+
+        if (!empty($suffix)) {
+            $model->setSuffix($suffix);
         }
 
         $model->replace($replace)->save($data);
@@ -795,12 +847,13 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
     /**
      * 更新数据
      * @access public
-     * @param array $data       数据数组
-     * @param mixed $where      更新条件
-     * @param array $allowField 允许字段
+     * @param array  $data       数据数组
+     * @param mixed  $where      更新条件
+     * @param array  $allowField 允许字段
+     * @param string $suffix     数据表后缀
      * @return static
      */
-    public static function update(array $data, $where = [], array $allowField = [])
+    public static function update(array $data, $where = [], array $allowField = [], string $suffix = '')
     {
         $model = new static();
 
@@ -810,6 +863,10 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
 
         if (!empty($where)) {
             $model->setUpdateWhere($where);
+        }
+
+        if (!empty($suffix)) {
+            $model->setSuffix($suffix);
         }
 
         $model->exists(true)->save($data);
@@ -952,8 +1009,26 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
         return $model;
     }
 
+    /**
+     * 切换数据库连接进行查询
+     * @access public
+     * @param string $connection 数据库连接标识
+     * @return Model
+     */
+    public static function connect(string $connection)
+    {
+        $model = new static();
+        $model->setConnection($connection);
+
+        return $model;
+    }
+
     public function __call($method, $args)
     {
+        if (isset(static::$macro[static::class][$method])) {
+            return call_user_func_array(static::$macro[static::class][$method]->bindTo($this, static::class), $args);
+        }
+
         if ('withattr' == strtolower($method)) {
             return call_user_func_array([$this, 'withAttribute'], $args);
         }
@@ -963,6 +1038,10 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
 
     public static function __callStatic($method, $args)
     {
+        if (isset(static::$macro[static::class][$method])) {
+            return call_user_func_array(static::$macro[static::class][$method]->bindTo(null, static::class), $args);
+        }
+
         $model = new static();
 
         return call_user_func_array([$model->db(), $method], $args);

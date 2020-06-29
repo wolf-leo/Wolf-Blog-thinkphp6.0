@@ -53,7 +53,7 @@ class Mysql extends PDOConnection
      */
     public function getFields(string $tableName): array
     {
-        list($tableName) = explode(' ', $tableName);
+        [$tableName] = explode(' ', $tableName);
 
         if (false === strpos($tableName, '`')) {
             if (strpos($tableName, '.')) {
@@ -74,10 +74,10 @@ class Mysql extends PDOConnection
                 $info[$val['field']] = [
                     'name'    => $val['field'],
                     'type'    => $val['type'],
-                    'notnull' => (bool) ('' === $val['null']), // not null is empty, null is yes
+                    'notnull' => 'NO' == $val['null'],
                     'default' => $val['default'],
-                    'primary' => (strtolower($val['key']) == 'pri'),
-                    'autoinc' => (strtolower($val['extra']) == 'auto_increment'),
+                    'primary' => strtolower($val['key']) == 'pri',
+                    'autoinc' => strtolower($val['extra']) == 'auto_increment',
                     'comment' => $val['comment'],
                 ];
             }
@@ -120,7 +120,7 @@ class Mysql extends PDOConnection
     public function startTransXa(string $xid)
     {
         $this->initConnect(true);
-        $this->linkID->execute("XA START '$xid'");
+        $this->linkID->exec("XA START '$xid'");
     }
 
     /**
@@ -132,8 +132,8 @@ class Mysql extends PDOConnection
     public function prepareXa(string $xid)
     {
         $this->initConnect(true);
-        $this->linkID->execute("XA END '$xid'");
-        $this->linkID->execute("XA PREPARE '$xid'");
+        $this->linkID->exec("XA END '$xid'");
+        $this->linkID->exec("XA PREPARE '$xid'");
     }
 
     /**
@@ -145,7 +145,7 @@ class Mysql extends PDOConnection
     public function commitXa(string $xid)
     {
         $this->initConnect(true);
-        $this->linkID->execute("XA COMMIT '$xid'");
+        $this->linkID->exec("XA COMMIT '$xid'");
     }
 
     /**
@@ -157,6 +157,6 @@ class Mysql extends PDOConnection
     public function rollbackXa(string $xid)
     {
         $this->initConnect(true);
-        $this->linkID->execute("XA ROLLBACK '$xid'");
+        $this->linkID->exec("XA ROLLBACK '$xid'");
     }
 }

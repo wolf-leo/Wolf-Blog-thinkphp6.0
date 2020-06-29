@@ -69,17 +69,17 @@ class Pgsql extends Builder
         if (is_int($key)) {
             return (string) $key;
         } elseif ($key instanceof Raw) {
-            return $key->getValue();
+            return $this->parseRaw($query, $key);
         }
 
         $key = trim($key);
 
         if (strpos($key, '->') && false === strpos($key, '(')) {
             // JSON字段支持
-            list($field, $name) = explode('->', $key);
-            $key                = '"' . $field . '"' . '->>\'' . $name . '\'';
+            [$field, $name] = explode('->', $key);
+            $key            = '"' . $field . '"' . '->>\'' . $name . '\'';
         } elseif (strpos($key, '.')) {
-            list($table, $key) = explode('.', $key, 2);
+            [$table, $key] = explode('.', $key, 2);
 
             $alias = $query->getOptions('alias');
 

@@ -23,17 +23,17 @@ use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Manager;
 use MongoDB\Driver\Query as MongoQuery;
 use MongoDB\Driver\ReadPreference;
+use MongoDB\Driver\WriteConcern;
 use think\db\BaseQuery;
 use think\db\builder\Mongo as Builder;
 use think\db\Connection;
-use think\db\ConnectionInterface;
 use think\db\exception\DbException as Exception;
 use think\db\Mongo as Query;
 
 /**
  * Mongo数据库驱动
  */
-class Mongo extends Connection implements ConnectionInterface
+class Mongo extends Connection
 {
 
     // 查询数据类型
@@ -41,6 +41,11 @@ class Mongo extends Connection implements ConnectionInterface
     protected $typeMap = 'array';
     protected $mongo; // MongoDb Object
     protected $cursor; // MongoCursor Object
+    protected $session_uuid; // sessions会话列表当前会话数组key 随机生成
+    protected $sessions = []; // 会话列表
+
+    /** @var Builder */
+    protected $builder;
 
     // 数据库连接参数配置
     protected $config = [
@@ -95,23 +100,6 @@ class Mongo extends Connection implements ConnectionInterface
     ];
 
     /**
-     * 架构函数 读取数据库配置信息
-     * @access public
-     * @param array $config 数据库配置数组
-     */
-    public function __construct(array $config = [])
-    {
-        if (!empty($config)) {
-            $this->config = array_merge($this->config, $config);
-        }
-
-        // 创建Builder对象
-        $class = $this->getBuilderClass();
-
-        $this->builder = new $class($this);
-    }
-
-    /**
      * 获取当前连接器类对应的Query类
      * @access public
      * @return string
@@ -126,7 +114,7 @@ class Mongo extends Connection implements ConnectionInterface
      * @access public
      * @return Builder
      */
-    public function getBuilder(): Builder
+    public function getBuilder()
     {
         return $this->builder;
     }
@@ -197,8 +185,8 @@ class Mongo extends Connection implements ConnectionInterface
     /**
      * 设置/获取当前操作的database
      * @access public
-     * @param  string  $db db
-     * @throws Exception
+     * @param string $db db
+     * @return string
      */
     public function db(string $db = null)
     {
@@ -212,10 +200,10 @@ class Mongo extends Connection implements ConnectionInterface
     /**
      * 执行查询但只返回Cursor对象
      * @access public
-     * @param  BaseQuery $query 查询对象
+     * @param Query $query 查询对象
      * @return Cursor
      */
-    public function cursor(BaseQuery $query)
+    public function cursor($query)
     {
         // 分析查询表达式
         $options = $query->parseOptions();
@@ -265,7 +253,14 @@ class Mongo extends Connection implements ConnectionInterface
         $readPreference       = $options['readPreference'] ?? null;
         $this->queryStartTime = microtime(true);
 
-        $this->cursor = $this->mongo->executeQuery($namespace, $mongoQuery, $readPreference);
+        if ($session = $this->getSession()) {
+            $this->cursor = $this->mongo->executeQuery($namespace, $query, [
+                'readPreference' => is_null($readPreference) ? new ReadPreference(ReadPreference::RP_PRIMARY) : $readPreference,
+                'session'        => $session,
+            ]);
+        } else {
+            $this->cursor = $this->mongo->executeQuery($namespace, $mongoQuery, $readPreference);
+        }
 
         // SQL监控
         if (!empty($this->config['trigger_sql'])) {
@@ -276,8 +271,39 @@ class Mongo extends Connection implements ConnectionInterface
     }
 
     /**
-     * 执行查询
+     * 执行查询 返回数据集
      * @access public
+     * @param  MongoQuery $query 查询对象
+     * @return mixed
+     * @throws AuthenticationException
+     * @throws InvalidArgumentException
+     * @throws ConnectionException
+     * @throws RuntimeException
+     */
+    public function query(MongoQuery $query)
+    {
+        return $this->mongoQuery($this->newQuery(), $query);
+    }
+
+    /**
+     * 执行语句
+     * @access public
+     * @param  BulkWrite $bulk
+     * @return int
+     * @throws AuthenticationException
+     * @throws InvalidArgumentException
+     * @throws ConnectionException
+     * @throws RuntimeException
+     * @throws BulkWriteException
+     */
+    public function execute(BulkWrite $bulk)
+    {
+        return $this->mongoExecute($this->newQuery(), $bulk);
+    }
+
+    /**
+     * 执行查询
+     * @access protected
      * @param BaseQuery          $query 查询对象
      * @param MongoQuery|Closure $mongoQuery Mongo查询对象
      * @return array
@@ -286,7 +312,7 @@ class Mongo extends Connection implements ConnectionInterface
      * @throws ConnectionException
      * @throws RuntimeException
      */
-    public function query(BaseQuery $query, $mongoQuery): array
+    protected function mongoQuery(BaseQuery $query, $mongoQuery): array
     {
         $options = $query->parseOptions();
 
@@ -320,7 +346,7 @@ class Mongo extends Connection implements ConnectionInterface
 
     /**
      * 执行写操作
-     * @access public
+     * @access protected
      * @param BaseQuery $query
      * @param BulkWrite $bulk
      *
@@ -331,7 +357,7 @@ class Mongo extends Connection implements ConnectionInterface
      * @throws RuntimeException
      * @throws BulkWriteException
      */
-    public function execute(BaseQuery $query, BulkWrite $bulk)
+    protected function mongoExecute(BaseQuery $query, BulkWrite $bulk)
     {
         $this->initConnect(true);
         $this->db->updateQueryTimes();
@@ -351,7 +377,14 @@ class Mongo extends Connection implements ConnectionInterface
         $writeConcern         = $options['writeConcern'] ?? null;
         $this->queryStartTime = microtime(true);
 
-        $writeResult = $this->mongo->executeBulkWrite($namespace, $bulk, $writeConcern);
+        if ($session = $this->getSession()) {
+            $writeResult = $this->mongo->executeBulkWrite($namespace, $bulk, [
+                'session'      => $session,
+                'writeConcern' => is_null($writeConcern) ? new WriteConcern(1) : $writeConcern,
+            ]);
+        } else {
+            $writeResult = $this->mongo->executeBulkWrite($namespace, $bulk, $writeConcern);
+        }
 
         // SQL监控
         if (!empty($this->config['trigger_sql'])) {
@@ -403,7 +436,14 @@ class Mongo extends Connection implements ConnectionInterface
             $this->queryStr = 'db.' . $this->queryStr;
         }
 
-        $this->cursor = $this->mongo->executeCommand($dbName, $command, $readPreference);
+        if ($session = $this->getSession()) {
+            $this->cursor = $this->mongo->executeCommand($dbName, $command, [
+                'readPreference' => is_null($readPreference) ? new ReadPreference(ReadPreference::RP_PRIMARY) : $readPreference,
+                'session'        => $session,
+            ]);
+        } else {
+            $this->cursor = $this->mongo->executeCommand($dbName, $command, $readPreference);
+        }
 
         // SQL监控
         if (!empty($this->config['trigger_sql'])) {
@@ -681,7 +721,7 @@ class Mongo extends Connection implements ConnectionInterface
         // 生成bulk对象
         $bulk = $this->builder->insert($query);
 
-        $writeResult = $this->execute($query, $bulk);
+        $writeResult = $this->mongoExecute($query, $bulk);
         $result      = $writeResult->getInsertedCount();
 
         if ($result) {
@@ -752,7 +792,7 @@ class Mongo extends Connection implements ConnectionInterface
         // 生成bulkWrite对象
         $bulk = $this->builder->insertAll($query, $dataSet);
 
-        $writeResult = $this->execute($query, $bulk);
+        $writeResult = $this->mongoExecute($query, $bulk);
 
         return $writeResult->getInsertedCount();
     }
@@ -776,7 +816,7 @@ class Mongo extends Connection implements ConnectionInterface
         // 生成bulkWrite对象
         $bulk = $this->builder->update($query);
 
-        $writeResult = $this->execute($query, $bulk);
+        $writeResult = $this->mongoExecute($query, $bulk);
 
         $result = $writeResult->getModifiedCount();
 
@@ -808,7 +848,7 @@ class Mongo extends Connection implements ConnectionInterface
         $bulk = $this->builder->delete($query);
 
         // 执行操作
-        $writeResult = $this->execute($query, $bulk);
+        $writeResult = $this->mongoExecute($query, $bulk);
 
         $result = $writeResult->getDeletedCount();
 
@@ -836,7 +876,7 @@ class Mongo extends Connection implements ConnectionInterface
         $resultSet = $this->db->trigger('before_select', $query);
 
         if (!$resultSet) {
-            $resultSet = $this->query($query, function ($query) {
+            $resultSet = $this->mongoQuery($query, function ($query) {
                 return $this->builder->select($query);
             });
         }
@@ -863,7 +903,7 @@ class Mongo extends Connection implements ConnectionInterface
 
         if (!$result) {
             // 执行查询
-            $resultSet = $this->query($query, function ($query) {
+            $resultSet = $this->mongoQuery($query, function ($query) {
                 return $this->builder->select($query, true);
             });
 
@@ -908,7 +948,7 @@ class Mongo extends Connection implements ConnectionInterface
         }
 
         // 执行查询操作
-        $resultSet = $this->query($query, $mongoQuery);
+        $resultSet = $this->mongoQuery($query, $mongoQuery);
 
         if (!empty($resultSet)) {
             $data   = array_shift($resultSet);
@@ -968,7 +1008,7 @@ class Mongo extends Connection implements ConnectionInterface
         }
 
         // 执行查询操作
-        $resultSet = $this->query($query, $mongoQuery);
+        $resultSet = $this->mongoQuery($query, $mongoQuery);
 
         if (('*' == $field || strpos($field, ',')) && $key) {
             $result = array_column($resultSet, null, $key);
@@ -1013,6 +1053,17 @@ class Mongo extends Connection implements ConnectionInterface
     }
 
     /**
+     * 获取数据库字段
+     * @access public
+     * @param mixed $tableName 数据表名
+     * @return array
+     */
+    public function getTableFields($tableName): array
+    {
+        return [];
+    }
+
+    /**
      * 执行数据库事务
      * @access public
      * @param  callable $callback 数据操作方法回调
@@ -1022,7 +1073,23 @@ class Mongo extends Connection implements ConnectionInterface
      * @throws \Throwable
      */
     public function transaction(callable $callback)
-    {}
+    {
+        $this->startTrans();
+        try {
+            $result = null;
+            if (is_callable($callback)) {
+                $result = call_user_func_array($callback, [$this]);
+            }
+            $this->commit();
+            return $result;
+        } catch (\Exception $e) {
+            $this->rollback();
+            throw $e;
+        } catch (\Throwable $e) {
+            $this->rollback();
+            throw $e;
+        }
+    }
 
     /**
      * 启动事务
@@ -1032,7 +1099,13 @@ class Mongo extends Connection implements ConnectionInterface
      * @throws \Exception
      */
     public function startTrans()
-    {}
+    {
+        $this->initConnect(true);
+        $this->session_uuid                  = uniqid();
+        $this->sessions[$this->session_uuid] = $this->getMongo()->startSession();
+
+        $this->sessions[$this->session_uuid]->startTransaction([]);
+    }
 
     /**
      * 用于非自动提交状态下面的查询提交
@@ -1041,7 +1114,12 @@ class Mongo extends Connection implements ConnectionInterface
      * @throws PDOException
      */
     public function commit()
-    {}
+    {
+        if ($session = $this->getSession()) {
+            $session->commitTransaction();
+            $this->setLastSession();
+        }
+    }
 
     /**
      * 事务回滚
@@ -1050,6 +1128,40 @@ class Mongo extends Connection implements ConnectionInterface
      * @throws PDOException
      */
     public function rollback()
-    {}
+    {
+        if ($session = $this->getSession()) {
+            $session->abortTransaction();
+            $this->setLastSession();
+        }
+    }
 
+    /**
+     * 结束当前会话,设置上一个会话为当前会话
+     * @author klinson <klinson@163.com>
+     */
+    protected function setLastSession()
+    {
+        if ($session = $this->getSession()) {
+            $session->endSession();
+            unset($this->sessions[$this->session_uuid]);
+            if (empty($this->sessions)) {
+                $this->session_uuid = null;
+            } else {
+                end($this->sessions);
+                $this->session_uuid = key($this->sessions);
+            }
+        }
+    }
+
+    /**
+     * 获取当前会话
+     * @return \MongoDB\Driver\Session|null
+     * @author klinson <klinson@163.com>
+     */
+    public function getSession()
+    {
+        return ($this->session_uuid && isset($this->sessions[$this->session_uuid]))
+        ? $this->sessions[$this->session_uuid]
+        : null;
+    }
 }

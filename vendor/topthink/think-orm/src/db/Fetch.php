@@ -69,8 +69,9 @@ class Fetch
     /**
      * 得到某个字段的值
      * @access public
-     * @param  string $field   字段名
-     * @param  mixed  $default 默认值
+     * @param string $field 字段名
+     * @param mixed $default 默认值
+     * @param bool $one
      * @return string
      */
     public function value(string $field, $default = null, bool $one = true): string
@@ -303,7 +304,7 @@ class Fetch
 
         if (!empty($options['soft_delete'])) {
             // 软删除
-            list($field, $condition) = $options['soft_delete'];
+            [$field, $condition] = $options['soft_delete'];
             if ($condition) {
                 $this->query->setOption('soft_delete', null);
                 $this->query->setOption('data', [$field => $condition]);
