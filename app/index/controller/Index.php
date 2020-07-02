@@ -9,7 +9,7 @@ class Index extends BlogBaseController
 {
 
     public function index() {
-        $type = input('get.type/d', 0);
+        $type = input('type/d', 0);
         $pageSize = 5; //每页显示5条数据 可自行修改
         $mod = new \app\admin\model\Article;
         $where[] = ['status', '=', 1];
@@ -18,8 +18,11 @@ class Index extends BlogBaseController
             $map[] = ['type', '=', $type];
         }
         $list = $mod->where($where)->orderRaw('sort asc,id desc')->paginate($pageSize);
-        if (empty($list)) {
+        if (empty($list->total())) {
             return $this->jump404();
+        }
+        if ($list->getCurrentPage() > $list->lastPage()) {
+            return redirect($type ? "/category/{$type}" : "/");
         }
         //      顶部轮播图 start
         $map[] = ['isbanner', '=', 1];
