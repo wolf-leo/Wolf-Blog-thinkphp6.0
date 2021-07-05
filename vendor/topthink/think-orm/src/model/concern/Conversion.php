@@ -43,10 +43,40 @@ trait Conversion
     protected $append = [];
 
     /**
+     * 场景
+     * @var array
+     */
+    protected $scene = [];
+
+    /**
+     * 数据输出字段映射
+     * @var array
+     */
+    protected $mapping = [];
+
+    /**
      * 数据集对象名
      * @var string
      */
     protected $resultSetType;
+
+    /**
+     * 数据命名是否自动转为驼峰
+     * @var bool
+     */
+    protected $convertNameToCamel;
+
+    /**
+     * 转换数据为驼峰命名（用于输出）
+     * @access public
+     * @param  bool $toCamel 是否自动驼峰命名
+     * @return $this
+     */
+    public function convertNameToCamel(bool $toCamel = true)
+    {
+        $this->convertNameToCamel = $toCamel;
+        return $this;
+    }
 
     /**
      * 设置需要附加的输出属性
@@ -57,6 +87,26 @@ trait Conversion
     public function append(array $append = [])
     {
         $this->append = $append;
+
+        return $this;
+    }
+
+    /**
+     * 设置输出层场景
+     * @access public
+     * @param  string $scene  场景名称
+     * @return $this
+     */
+    public function scene(string $scene)
+    {
+        if (isset($this->scene[$scene])) {
+            $data = $this->scene[$scene];
+            foreach (['append', 'hidden', 'visible'] as $name) {
+                if (isset($data[$name])) {
+                    $this->$name($data[$name]);
+                }
+            }
+        }
 
         return $this;
     }
@@ -120,6 +170,19 @@ trait Conversion
     }
 
     /**
+     * 设置属性的映射输出
+     * @access public
+     * @param  array $map
+     * @return $this
+     */
+    public function mapping(array $map)
+    {
+        $this->mapping = $map;
+
+        return $this;
+    }
+
+    /**
      * 转换当前模型对象为数组
      * @access public
      * @return array
@@ -174,11 +237,28 @@ trait Conversion
             } elseif (!isset($this->hidden[$key]) && !$hasVisible) {
                 $item[$key] = $this->getAttr($key);
             }
+
+            if (isset($this->mapping[$key])) {
+                // 检查字段映射
+                $mapName        = $this->mapping[$key];
+                $item[$mapName] = $item[$key];
+                unset($item[$key]);
+            }
         }
 
         // 追加属性（必须定义获取器）
         foreach ($this->append as $key => $name) {
             $this->appendAttrToArray($item, $key, $name);
+        }
+
+        if ($this->convertNameToCamel) {
+            foreach ($item as $key => $val) {
+                $name = Str::camel($key);
+                if ($name !== $key) {
+                    $item[$name] = $val;
+                    unset($item[$key]);
+                }
+            }
         }
 
         return $item;
@@ -201,11 +281,11 @@ trait Conversion
             $value       = $this->getAttr($name);
             $item[$name] = $value;
 
-            $this->getBindAttr($name, $value, $item);
+            $this->getBindAttrValue($name, $value, $item);
         }
     }
 
-    protected function getBindAttr(string $name, $value, array &$item = [])
+    protected function getBindAttrValue(string $name, $value, array &$item = [])
     {
         $relation = $this->isRelationAttr($name);
         if (!$relation) {

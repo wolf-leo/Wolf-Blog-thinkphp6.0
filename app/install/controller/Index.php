@@ -8,7 +8,8 @@ use think\facade\View;
 class Index extends InstallBaseController
 {
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         define('ROOT_PATH', root_path());
         $installlocak_file = ROOT_PATH . 'wcore' . DIRECTORY_SEPARATOR . 'install.lock';
@@ -18,12 +19,14 @@ class Index extends InstallBaseController
         }
     }
 
-    public function index() {
-        return $this->installTpl();
+    public function index()
+    {
+        return view();
     }
 
-    public function step2() {
-        $err = 0;
+    public function step2()
+    {
+        $err        = 0;
         $phpversion = $mysql = $uploadSize = $session = $curl = '';
         if (version_compare(PHP_VERSION, '7.1.0', '<')) {
             $phpversion = correct_span(PHP_VERSION, 0);
@@ -77,28 +80,30 @@ class Index extends InstallBaseController
             }
         }
         View::assign([
-            'phpversion' => $phpversion,
-            'mysql' => $mysql,
-            'uploadSize' => $uploadSize,
-            'session' => $session,
-            'curl' => $curl,
-            'folder' => $folder,
-            'err' => $err,
-        ]);
-        return $this->installTpl();
+                         'phpversion' => $phpversion,
+                         'mysql'      => $mysql,
+                         'uploadSize' => $uploadSize,
+                         'session'    => $session,
+                         'curl'       => $curl,
+                         'folder'     => $folder,
+                         'err'        => $err,
+                     ]);
+        return view();
     }
 
-    public function step3() {
+    public function step3()
+    {
         $domain = request()->domain();
         View::assign([
-            'domain' => $domain,
-            'webPath' => ROOT_PATH,
-        ]);
+                         'domain'  => $domain,
+                         'webPath' => ROOT_PATH,
+                     ]);
         @touch(ROOT_PATH . 'wcore' . DIRECTORY_SEPARATOR . 'step2_successed.lock');
-        return $this->installTpl();
+        return view();
     }
 
-    public function step4() {
+    public function step4()
+    {
         if (!request()->isPost()) {
             $url = url('/index/index')->build();
             header('Location: ' . $url);
@@ -112,40 +117,42 @@ class Index extends InstallBaseController
         }
         View::assign(['post' => input('post.'),]);
         @touch(ROOT_PATH . 'wcore' . DIRECTORY_SEPARATOR . 'step3_successed.lock');
-        return $this->installTpl();
+        return view();
     }
 
-    public function step5() {
+    public function step5()
+    {
         if (file_exists(ROOT_PATH . 'wcore' . DIRECTORY_SEPARATOR . 'step4_successed.lock')) {
             @touch(ROOT_PATH . 'wcore' . DIRECTORY_SEPARATOR . 'install.lock');
         }
-        return $this->installTpl();
+        return view();
     }
 
-    public function installDb() {
-        $n = input('get.n/d', 0);
-        $error = ['code' => 0, 'msg' => 'error', 'n' => $n];
+    public function installDb()
+    {
+        $n       = input('get.n/d', 0);
+        $error   = ['code' => 0, 'msg' => 'error', 'n' => $n];
         $success = ['code' => 1, 'msg' => 'success', 'n' => $n];
         if (!request()->isAjax()) {
             return json($error);
         }
-        $dbType = input('post.dbtype/s', 'pdo', 'trim');
-        $dbHost = input('post.dbhost/s', '', 'trim');
-        $dbPort = input('post.dbport/d', '', 'trim');
-        $dbName = input('post.dbname/s', 'wolfcode_blog', 'trim');
-        $dbUser = input('post.dbuser/s', '', 'trim');
-        $dbPwd = input('post.dbpw/s', '', 'trim');
-        $dbPrefix = input('post.dbprefix/s', '', 'trim');
-        $dbCahrset = input('post.dbcharset/s', 'utf8', 'trim');
-        $adminname = input('post.manager_adminname/s', '', 'trim');
-        $password = input('post.manager_pwd/s', '', 'trim');
-        $config = $arr = [];
-        $config['db_type'] = in_array($dbType, ['pdo', 'mysqli', 'mysql']) ? $dbType : 'pdo';
-        $config['db_host'] = $dbHost;
-        $config['db_name'] = $dbName;
-        $config['db_user'] = $dbUser;
-        $config['db_pwd'] = $dbPwd;
-        $config['db_port'] = $dbPort;
+        $dbType              = input('post.dbtype/s', 'pdo', 'trim');
+        $dbHost              = input('post.dbhost/s', '', 'trim');
+        $dbPort              = input('post.dbport/d', '', 'trim');
+        $dbName              = input('post.dbname/s', 'wolfcode_blog', 'trim');
+        $dbUser              = input('post.dbuser/s', '', 'trim');
+        $dbPwd               = input('post.dbpw/s', '', 'trim');
+        $dbPrefix            = input('post.dbprefix/s', '', 'trim');
+        $dbCahrset           = input('post.dbcharset/s', 'utf8', 'trim');
+        $adminname           = input('post.manager_adminname/s', '', 'trim');
+        $password            = input('post.manager_pwd/s', '', 'trim');
+        $config              = $arr = [];
+        $config['db_type']   = in_array($dbType, ['pdo', 'mysqli', 'mysql']) ? $dbType : 'pdo';
+        $config['db_host']   = $dbHost;
+        $config['db_name']   = $dbName;
+        $config['db_user']   = $dbUser;
+        $config['db_pwd']    = $dbPwd;
+        $config['db_port']   = $dbPort;
         $config['db_prefix'] = $dbPrefix;
         try {
             $conn = mysqli_connect($dbHost, $dbUser, $dbPwd, null, $dbPort);
@@ -153,8 +160,8 @@ class Index extends InstallBaseController
             $error['msg'] = correct_span("连接 MySQL 失败: " . mysqli_connect_error() . ' 请刷新本页面后检查数据库账号密码', 0);
             return json($error);
         }
-        $mysql_version = (string) mysqli_get_server_info($conn);
-        $exp_mysql = explode('.', $mysql_version);
+        $mysql_version = (string)mysqli_get_server_info($conn);
+        $exp_mysql     = explode('.', $mysql_version);
         if (count($exp_mysql) < 3) {
             array_push($exp_mysql, '0');
         }
@@ -189,7 +196,7 @@ class Index extends InstallBaseController
                 return json($error);
             }
             if (!$n) {
-                $success['n'] = 1;
+                $success['n']   = 1;
                 $success['msg'] = '<li>' . correct_span("成功创建数据库 {$dbName}", 1) . '</li> ';
                 mysqli_close($conn);
                 return json($success);
@@ -203,16 +210,16 @@ class Index extends InstallBaseController
             mysqli_close($conn);
             return json($error);
         }
-        $sqldata = file_get_contents($dbbase_file);
+        $sqldata   = file_get_contents($dbbase_file);
         $sqlFormat = sql_split($sqldata, $dbPrefix);
-        $counts = count($sqlFormat);
-        $message = '';
+        $counts    = count($sqlFormat);
+        $message   = '';
         for ($i = $n; $i < $counts; $i++) {
             $sql = trim($sqlFormat[$i]);
             if (strstr($sql, 'CREATE TABLE')) {
                 preg_match('/CREATE TABLE `([^ ]*)`/', $sql, $matches);
                 //mysqli_query($conn, "DROP TABLE IF EXISTS `$matches[1]");
-                $ret = mysqli_query($conn, $sql);
+                $ret      = mysqli_query($conn, $sql);
                 $db_title = $matches[1] ?? "";
                 if ($ret) {
                     $message .= '<li>' . correct_span("创建数据表 {$db_title} 完成", 1) . '</li> ';
@@ -221,14 +228,14 @@ class Index extends InstallBaseController
                 }
                 $i++;
                 $success['msg'] = $message;
-                $success['n'] = $i;
+                $success['n']   = $i;
                 return json($success);
             }
         }
         if ($i < 1) {
-            $message = '创建数据表失败';
+            $message      = '创建数据表失败';
             $error['msg'] = $message;
-            $error['n'] = 0;
+            $error['n']   = 0;
             mysqli_close($conn);
             return json($error);
         }
@@ -239,40 +246,40 @@ class Index extends InstallBaseController
         }
         //插入管理员
         $md5_password = AdminPassword($password);
-        $time = time();
-        $query = "INSERT INTO `{$dbPrefix}admin` VALUES ('1', '{$adminname}', '{$md5_password}', '1', '超级管理员', '', '', '', '0', '', '{$time}', '系统',1)";
-        $ret = mysqli_query($conn, $query);
+        $time         = time();
+        $query        = "INSERT INTO `{$dbPrefix}admin` VALUES ('1', '{$adminname}', '{$md5_password}', '1', '超级管理员', '', '', '', '0', '', '{$time}', '系统',1)";
+        $ret          = mysqli_query($conn, $query);
 
         $sql_data = ROOT_PATH . 'extend' . DIRECTORY_SEPARATOR . 'sqldata.sql';
         if (file_exists($sql_data)) {
             $sql2 = file_get_contents($sql_data);
             if (!mysqli_select_db($conn, $dbName)) {
-                $message = "数据库{$dbName}不存在！";
+                $message      = "数据库{$dbName}不存在！";
                 $error['msg'] = $message;
-                $error['n'] = 0;
+                $error['n']   = 0;
                 mysqli_close($conn);
                 return json($error);
             }
-            $exp = array_filter(explode('INSERT INTO', ($sql2)));
-            $count = count($exp) + 1;
-            $value = '';
+            $exp     = array_filter(explode('INSERT INTO', ($sql2)));
+            $count   = count($exp) + 1;
+            $value   = '';
             $result2 = FALSE;
             foreach ($exp as $key => $value) {
                 $query_sql = 'INSERT INTO ' . htmlspecialchars_decode($value);
-                $result2 = mysqli_query($conn, $query_sql);
+                $result2   = mysqli_query($conn, $query_sql);
             }
         }
         mysqli_close($conn);
         if ($ret) {
-            $message = correct_span('添加后台管理员成功', 1);
+            $message        = correct_span('添加后台管理员成功', 1);
             $success['msg'] = $message;
-            $success['n'] = 999999;
+            $success['n']   = 999999;
             @touch(ROOT_PATH . 'wcore' . DIRECTORY_SEPARATOR . 'step4_successed.lock');
             return json($success);
         } else {
-            $message = correct_span('添加后台管理员失败', 0);
+            $message      = correct_span('添加后台管理员失败', 0);
             $error['msg'] = $message;
-            $error['n'] = 0;
+            $error['n']   = 0;
             return json($error);
         }
     }
@@ -281,17 +288,18 @@ class Index extends InstallBaseController
      * 检测Db数据库连接
      * @return json
      */
-    public function checkdb() {
-        $error = ['code' => 0];
+    public function checkdb()
+    {
+        $error   = ['code' => 0];
         $success = ['code' => 1];
         if (!request()->isAjax() || !request()->isPost()) {
             return json($error);
         }
         $dbhost = input('post.dbhost/s', '');
         $dbuser = input('post.dbuser/s', '');
-        $dbpw = input('post.dbpw/s', '');
+        $dbpw   = input('post.dbpw/s', '');
         $dbport = input('post.dbport/d', 0);
-        $conn = mysqli_connect($dbhost, $dbuser, $dbpw, null, $dbport);
+        $conn   = mysqli_connect($dbhost, $dbuser, $dbpw, null, $dbport);
         if (!$conn) {
             return json($error);
         }

@@ -5,14 +5,17 @@ namespace app\admin\controller;
 use app\AdminBaseController;
 use think\facade\View;
 
-class Index extends AdminBaseController {
+class Index extends AdminBaseController
+{
 
-	public function index() {
-		return $this->adminPublicTpl();
-	}
+    public function index()
+    {
+        return $this->adminPublicTpl();
+    }
 
-	public function main() {
-		return $this->adminTpl();
-	}
+    public function main()
+    {
+        return $this->adminTpl();
+    }
 
 }

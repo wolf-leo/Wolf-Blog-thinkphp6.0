@@ -8,12 +8,12 @@ class ComposerStaticInit6ac2f71079902fbf744e94377fc0614c
 {
     public static $files = array (
         '9b552a3cc426e3287cc811caefa3cf53' => __DIR__ . '/..' . '/topthink/think-helper/src/helper.php',
-        '538ca81a9a966a6716601ecf48f4eaef' => __DIR__ . '/..' . '/opis/closure/functions.php',
-        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
-        '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
+        '35fab96057f1bf5e7aba31a8a6d5fdde' => __DIR__ . '/..' . '/topthink/think-orm/stubs/load_stubs.php',
         'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
-        '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
+        '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
+        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '1cfd2761b63b0a29ed23657ea394cb2d' => __DIR__ . '/..' . '/topthink/think-captcha/src/helper.php',
+        '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -43,12 +43,9 @@ class ComposerStaticInit6ac2f71079902fbf744e94377fc0614c
             'Psr\\Container\\' => 14,
             'Psr\\Cache\\' => 10,
         ),
-        'O' => 
-        array (
-            'Opis\\Closure\\' => 13,
-        ),
         'L' => 
         array (
+            'League\\MimeTypeDetection\\' => 25,
             'League\\Flysystem\\Cached\\' => 24,
             'League\\Flysystem\\' => 17,
         ),
@@ -73,10 +70,10 @@ class ComposerStaticInit6ac2f71079902fbf744e94377fc0614c
         ),
         'think\\' => 
         array (
-            0 => __DIR__ . '/..' . '/topthink/framework/src/think',
+            0 => __DIR__ . '/..' . '/topthink/think-template/src',
             1 => __DIR__ . '/..' . '/topthink/think-helper/src',
             2 => __DIR__ . '/..' . '/topthink/think-orm/src',
-            3 => __DIR__ . '/..' . '/topthink/think-template/src',
+            3 => __DIR__ . '/..' . '/topthink/framework/src/think',
         ),
         'app\\' => 
         array (
@@ -114,9 +111,9 @@ class ComposerStaticInit6ac2f71079902fbf744e94377fc0614c
         array (
             0 => __DIR__ . '/..' . '/psr/cache/src',
         ),
-        'Opis\\Closure\\' => 
+        'League\\MimeTypeDetection\\' => 
         array (
-            0 => __DIR__ . '/..' . '/opis/closure/src',
+            0 => __DIR__ . '/..' . '/league/mime-type-detection/src',
         ),
         'League\\Flysystem\\Cached\\' => 
         array (
@@ -133,7 +130,10 @@ class ComposerStaticInit6ac2f71079902fbf744e94377fc0614c
     );
 
     public static $classMap = array (
+        'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
+        'UnhandledMatchError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
         'ValueError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',
     );
 

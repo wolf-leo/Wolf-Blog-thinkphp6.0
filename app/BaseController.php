@@ -1,6 +1,5 @@
 <?php
-
-declare (strict_types=1);
+declare (strict_types = 1);
 
 namespace app;
 
@@ -13,7 +12,6 @@ use think\Validate;
  */
 abstract class BaseController
 {
-
     /**
      * Request实例
      * @var \think\Request
@@ -43,15 +41,18 @@ abstract class BaseController
      * @access public
      * @param  App  $app  应用对象
      */
-    public function __construct(App $app) {
-        $this->app = $app;
+    public function __construct(App $app)
+    {
+        $this->app     = $app;
         $this->request = $this->app->request;
+
+        // 控制器初始化
+        $this->initialize();
     }
 
     // 初始化
-    protected function initialize() {
-        
-    }
+    protected function initialize()
+    {}
 
     /**
      * 验证数据
@@ -63,17 +64,18 @@ abstract class BaseController
      * @return array|string|true
      * @throws ValidateException
      */
-    protected function validate(array $data, $validate, array $message = [], bool $batch = false) {
+    protected function validate(array $data, $validate, array $message = [], bool $batch = false)
+    {
         if (is_array($validate)) {
             $v = new Validate();
             $v->rule($validate);
         } else {
             if (strpos($validate, '.')) {
                 // 支持场景
-                list($validate, $scene) = explode('.', $validate);
+                [$validate, $scene] = explode('.', $validate);
             }
             $class = false !== strpos($validate, '\\') ? $validate : $this->app->parseClass('validate', $validate);
-            $v = new $class();
+            $v     = new $class();
             if (!empty($scene)) {
                 $v->scene($scene);
             }
