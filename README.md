@@ -63,6 +63,9 @@ define.php 是自定义的，如果需要使用，可以引入【参考 /app/Blo
   404默认调用官方的助手函数 abort 只有在 app_debug = false 时才会正常显示404页面，否则会有相应的错误警告提示
 
   404页面默认在每个模块下的/view/public/404.php
+## 博客样式
+
+![avatar](./extend/MyBlog.png)
 
 ## 伪静态设置：
 
