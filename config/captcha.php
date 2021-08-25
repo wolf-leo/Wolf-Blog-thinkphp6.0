@@ -32,7 +32,7 @@ return [
     'imageW'   => 0,
 
     // 添加额外的验证码设置
-    verify     => [
+    'verify'     => [
         'length'  => 4,
         'codeSet' => '0123456789',
     ],
